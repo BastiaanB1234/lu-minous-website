@@ -10,20 +10,20 @@ const blogPosts = [
     content: `
       <p class="mb-6 text-lg leading-8 text-gray-700">
         Embarking on a spiritual growth journey is one of the most profound decisions you can make in your life. 
-        It's a path that leads to deeper self-awareness, inner peace, and a connection to something greater than yourself.
+        It&apos;s a path that leads to deeper self-awareness, inner peace, and a connection to something greater than yourself.
       </p>
       
       <h2 class="text-2xl font-bold text-gray-900 mb-4 mt-8">Understanding Spiritual Growth</h2>
       <p class="mb-6 text-lg leading-8 text-gray-700">
-        Spiritual growth is not about following a specific religion or belief system. Instead, it's about developing 
-        your inner wisdom, expanding your consciousness, and aligning with your authentic self. It's a journey of 
+        Spiritual growth is not about following a specific religion or belief system. Instead, it&apos;s about developing 
+        your inner wisdom, expanding your consciousness, and aligning with your authentic self. It&apos;s a journey of 
         self-discovery that can transform every aspect of your life.
       </p>
       
       <h2 class="text-2xl font-bold text-gray-900 mb-4 mt-8">The Foundation: Self-Awareness</h2>
       <p class="mb-6 text-lg leading-8 text-gray-700">
         The first step in any spiritual journey is developing self-awareness. This means taking time to reflect on 
-        your thoughts, emotions, and behaviors. It's about understanding your patterns, triggers, and the stories 
+        your thoughts, emotions, and behaviors. It&apos;s about understanding your patterns, triggers, and the stories 
         you tell yourself about who you are.
       </p>
       
@@ -35,7 +35,7 @@ const blogPosts = [
       <ul class="list-disc list-inside mb-6 text-lg leading-8 text-gray-700 space-y-2">
         <li><strong>Morning Reflection:</strong> Start each day with 10-15 minutes of quiet reflection</li>
         <li><strong>Mindful Breathing:</strong> Practice conscious breathing throughout the day</li>
-        <li><strong>Gratitude Practice:</strong> Write down three things you're grateful for each day</li>
+        <li><strong>Gratitude Practice:</strong> Write down three things you&apos;re grateful for each day</li>
         <li><strong>Nature Connection:</strong> Spend time in nature to ground yourself</li>
         <li><strong>Evening Review:</strong> Reflect on your day and what you learned</li>
       </ul>
@@ -43,7 +43,7 @@ const blogPosts = [
       <h2 class="text-2xl font-bold text-gray-900 mb-4 mt-8">Overcoming Common Challenges</h2>
       <p class="mb-6 text-lg leading-8 text-gray-700">
         Every spiritual journey comes with challenges. You might experience doubt, resistance, or periods where 
-        you feel stuck. Remember that these are normal and often indicate that you're on the right path. 
+        you feel stuck. Remember that these are normal and often indicate that you&apos;re on the right path. 
         Growth happens in cycles, not in a straight line.
       </p>
       
@@ -56,7 +56,7 @@ const blogPosts = [
       
       <h2 class="text-2xl font-bold text-gray-900 mb-4 mt-8">Measuring Your Progress</h2>
       <p class="mb-6 text-lg leading-8 text-gray-700">
-        Spiritual growth isn't always easy to measure, but there are signs that indicate you're moving forward:
+        Spiritual growth isn&apos;t always easy to measure, but there are signs that indicate you&apos;re moving forward:
       </p>
       
       <ul class="list-disc list-inside mb-6 text-lg leading-8 text-gray-700 space-y-2">
@@ -70,14 +70,14 @@ const blogPosts = [
       
       <h2 class="text-2xl font-bold text-gray-900 mb-4 mt-8">The Journey Continues</h2>
       <p class="mb-6 text-lg leading-8 text-gray-700">
-        Remember that spiritual growth is a lifelong journey, not a destination. There's no finish line to cross 
-        or final level to achieve. Instead, it's about continuous evolution, learning, and deepening your 
+        Remember that spiritual growth is a lifelong journey, not a destination. There&apos;s no finish line to cross 
+        or final level to achieve. Instead, it&apos;s about continuous evolution, learning, and deepening your 
         connection to your authentic self and the world around you.
       </p>
       
       <p class="mb-6 text-lg leading-8 text-gray-700">
         As you continue on your path, be patient with yourself. Trust the process and know that every step, 
-        no matter how small, is moving you forward. Your spiritual journey is unique to you, and there's no 
+        no matter how small, is moving you forward. Your spiritual journey is unique to you, and there&apos;s no 
         right or wrong way to proceed.
       </p>
     `,
@@ -93,7 +93,7 @@ const blogPosts = [
     excerpt: 'Learn simple yet effective meditation practices that will help you find inner peace and clarity.',
     content: `
       <p class="mb-6 text-lg leading-8 text-gray-700">
-        Meditation is one of the most powerful tools for spiritual growth and inner peace. Whether you're a 
+        Meditation is one of the most powerful tools for spiritual growth and inner peace. Whether you&apos;re a 
         complete beginner or have some experience, these five techniques will help you establish a consistent 
         meditation practice.
       </p>
@@ -113,7 +113,7 @@ const blogPosts = [
       
       <h2 class="text-2xl font-bold text-gray-900 mb-4 mt-8">3. Loving-Kindness Meditation</h2>
       <p class="mb-6 text-lg leading-8 text-gray-700">
-        This practice involves sending love, compassion, and well-wishes to yourself and others. It's a 
+        This practice involves sending love, compassion, and well-wishes to yourself and others. It&apos;s a 
         powerful way to cultivate positive emotions and develop empathy.
       </p>
       
@@ -145,7 +145,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Blog Post Not Found</h1>
-          <p className="text-gray-600 mb-6">The blog post you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-6">The blog post you&apos;re looking for doesn&apos;t exist.</p>
           <Link
             href="/blog"
             className="inline-flex items-center rounded-md bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors duration-200"
