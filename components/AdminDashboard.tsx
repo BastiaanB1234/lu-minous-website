@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { BlogPost, BlogCategory, BlogTag } from '../lib/types';
+import { BlogPost, BlogCategory, BlogTag, WebsiteStats } from '../lib/types';
 import { blogAdminManager } from '../lib/admin';
 
 interface AdminDashboardProps {
@@ -13,7 +13,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [tags, setTags] = useState<BlogTag[]>([]);
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<WebsiteStats | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -210,7 +210,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as 'posts' | 'categories' | 'tags' | 'analytics')}
                 className={`py-2 px-1 border-b-2 font-medium text-sm ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'

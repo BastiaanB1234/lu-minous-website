@@ -1,7 +1,7 @@
 // Lu Minous Website - Admin Management System
 // Clean, professional admin interface for blog management
 
-import { BlogPost, BlogCategory, BlogTag, ApiResponse } from './types';
+import { BlogPost, BlogCategory, BlogTag, ApiResponse, WebsiteStats } from './types';
 
 export class BlogAdminManager {
   private static instance: BlogAdminManager;
@@ -55,7 +55,7 @@ export class BlogAdminManager {
     }
   }
 
-  async updateBlogPost(id: string, updates: Partial<BlogPost>): Promise<ApiResponse<BlogPost>> {
+  async updateBlogPost(_id: string, _updates: Partial<BlogPost>): Promise<ApiResponse<BlogPost>> {
     try {
       // Here you would typically update in database
       // For now, we'll return success response
@@ -74,7 +74,7 @@ export class BlogAdminManager {
     }
   }
 
-  async deleteBlogPost(id: string): Promise<ApiResponse<void>> {
+  async deleteBlogPost(_id: string): Promise<ApiResponse<void>> {
     try {
       // Here you would typically delete from database
       // For now, we'll return success response
@@ -165,7 +165,7 @@ export class BlogAdminManager {
   }
 
   // Analytics and Statistics
-  async getWebsiteStats(): Promise<ApiResponse<any>> {
+  async getWebsiteStats(): Promise<ApiResponse<WebsiteStats>> {
     try {
       // Here you would typically get stats from database
       const stats = {

@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import { Calendar, User, ArrowRight, Star } from 'lucide-react';
 import { getPublishedPosts, getFeaturedPosts } from '@/lib/blog-data';
+import { BlogPost } from '@/lib/types';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -81,7 +82,7 @@ export default async function BlogPage() {
   }
 }
 
-function FeaturedPostCard({ post }: { post: any }) {
+function FeaturedPostCard({ post }: { post: BlogPost }) {
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       {post.imageUrl && (
@@ -116,7 +117,7 @@ function FeaturedPostCard({ post }: { post: any }) {
   );
 }
 
-function PostCard({ post }: { post: any }) {
+function PostCard({ post }: { post: BlogPost }) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       {post.imageUrl && (
