@@ -1,6 +1,22 @@
 // Import blog posts data
 const blogPosts = [
   {
+    id: 1756271203,
+    slug: "wijsheid-van-basbeem",
+    title: "Wijsheid van basbeem",
+    excerpt: "“Real love feels like peace,   and you deserve nothing less.”  Have you ever known a love that feels like peace? Not chaos. Not fear. Not walking on eggshells. But peace.  A love where you can brea...",
+    content: `# Wijsheid van basbeem\n\n“Real love feels like peace, \n and you deserve nothing less.”\n\nHave you ever known a love that feels like peace?\nNot chaos. Not fear. Not walking on eggshells.\nBut peace.\n\nA love where you can breathe fully.\nWhere you are safe to be all of you.\nWhere even silence feels like home.\n\nI have never felt so much rest within myself,\nand with him.\nTogether or apart\nThe peace remains.\n\nI adore him for who he is.\nI respect the way he protects me,\nthe way he pushes me to grow,\nembraces me when I need to rest,\nchecks in simply to see if I’m okay.\n\nAnd I also respect the way he carries himself.\nHis humor that lights up the room.\nThe way he cares.... \ndeeply, \nsincerely,\nnot because he has to,\nbut because it’s who he is.\n\nThis is love.\nNot heavy. Not confusing.\nBut steady. Nurturing. Freeing.\n\nThe kind of love that makes you more of yourself,\nthat breathes life into your soul,\nthat feels like coming home.\n\nAnd my wish…\n\nis that everyone reading this may one day know this kind of love too.\n\nBecause you are worthy of it. Always...\n\n## Reflectie\n\nDeze wijsheid nodigt uit tot diepe reflectie en persoonlijke groei.`,
+    author: "Lu Minous",
+    published_at: "2025-08-27T07:06:33.004748",
+    status: "published" as const,
+    featured: false,
+    created_at: "2025-08-27T07:06:33.004738",
+    updated_at: "2025-08-27T07:06:33.004747",
+    category: "Spiritual Growth",
+    tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"]    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-KV2gN8Ieo236sDgoB115WKcZ.png?st=2025-08-27T04%3A06%3A43Z&se=2025-08-27T06%3A06%3A43Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=77e5a8ec-6bd1-4477-8afc-16703a64f029&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T10%3A25%3A45Z&ske=2025-08-27T10%3A25%3A45Z&sks=b&skv=2024-08-04&sig=ehXvdfBiAoUpe77evZvGYrAG%2BAjXIhW16fNGroLVUBM%3D",
+  },
+
+  {
     id: 1,
     slug: "spiritual-growth-journey",
     title: "Your Spiritual Growth Journey: A Complete Guide",
