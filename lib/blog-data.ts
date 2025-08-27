@@ -48,25 +48,8 @@ export const blogTags: BlogTag[] = [
 
 // Blog Posts - Clean, structured data
 export const blogPosts: BlogPost[] = [
-  // Example post structure - will be populated by Lu Minous Bot
-  {
-    id: 'example-post',
-    title: 'Welcome to Lu Minous',
-    excerpt: 'Discover spiritual wisdom and personal growth insights',
-    content: '# Welcome to Lu Minous\n\nThis is where wisdom meets technology...',
-    slug: 'welcome-to-lu-minous',
-    author: 'Lu Minous',
-    publishedAt: new Date().toISOString(),
-    status: 'published',
-    featured: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    category: 'spiritual-growth',
-    tags: ['spiritual', 'growth', 'welcome'],
-    imageUrl: '/images/blog/welcome-to-lu-minous.png',
-    readTime: 3,
-    viewCount: 0
-  }
+  // This will be populated by Lu Minous Bot when creating real posts
+  // For now, we have an empty array to avoid 400 errors
 ];
 
 // Utility functions for clean data management

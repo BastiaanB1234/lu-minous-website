@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Image from 'next/image';
 import { Calendar, User, ArrowRight, Star } from 'lucide-react';
 import { getPublishedPosts, getFeaturedPosts } from '@/lib/blog-data';
 import { BlogPost } from '@/lib/types';
@@ -86,10 +87,11 @@ function FeaturedPostCard({ post }: { post: BlogPost }) {
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       {post.imageUrl && (
         <div className="relative h-64">
-          <img
+          <Image
             src={post.imageUrl}
             alt={post.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         </div>
       )}
@@ -120,10 +122,11 @@ function PostCard({ post }: { post: BlogPost }) {
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       {post.imageUrl && (
         <div className="relative h-48">
-          <img
+          <Image
             src={post.imageUrl}
             alt={post.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         </div>
       )}
