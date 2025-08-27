@@ -1,6 +1,23 @@
 // Import blog posts data
 const blogPosts = [
   {
+    id: 1756271727,
+    slug: "embracing-peaceful-love-a-journey-to-wholeness",
+    title: "Embracing Peaceful Love: A Journey to Wholeness",
+    excerpt: "Discover the transformative power of love that feels like peace and embrace the essence of true connection.",
+    content: `Love that feels like peace is a rare gem in a world filled with chaos and noise. It is a sanctuary where you can fully exhale, where your soul finds solace in the presence of another. In a society that often glorifies tumultuous relationships, finding a love that offers tranquility and security can feel like discovering a hidden treasure. Basbeem's heartfelt message beautifully encapsulates the essence of a love that nurtures, uplifts, and liberates. It serves as a gentle reminder that we all deserve to experience a love that enriches our lives and helps us grow into the best versions of ourselves. As you reflect on Basbeem's words, consider the relationships in your life. Do they bring you peace? Do they make you feel safe and valued? Are you able to be your authentic self without fear of judgment or rejection? Cultivating a love that feels like peace requires a deep sense of self-awareness, empathy, and vulnerability. It involves honoring your boundaries, communicating openly, and actively listening to your partner's needs. It means showing up for each other with kindness, respect, and unwavering support. True love is not about possessiveness or control; it is about mutual growth, acceptance, and a shared journey towards wholeness. When you find someone who cherishes you for who you are, who uplifts you in times of need, and who encourages you to reach your full potential, hold onto that love with gratitude and reverence. Nurture it, cherish it, and allow it to blossom into a beautiful tapestry of shared experiences, laughter, and growth. And if you have yet to encounter a love that feels like peace, have faith that it exists. Trust in the divine timing of the universe and remain open to the possibilities that lie ahead. Your heart is deserving of a love that soothes your spirit, ignites your passion, and empowers you to shine brightly in the world. May Basbeem's words serve as a beacon of hope and inspiration as you continue your journey towards finding or nurturing a love that feels like peace.`,
+    author: "Lu Minous",
+    published_at: "2025-08-27T07:15:13.285891",
+    status: "published" as const,
+    featured: false,
+    created_at: "2025-08-27T07:15:13.285881",
+    updated_at: "2025-08-27T07:15:13.285889",
+    category: "Personal Development",
+    tags: ["love", "peace", "relationships", "personal growth", "spirituality"],
+    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-Re5lwCO4cxrgd84iidTHT5TH.png?st=2025-08-27T04%3A15%3A27Z&se=2025-08-27T06%3A15%3A27Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=b1a0ae1f-618f-4548-84fd-8b16cacd5485&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T10%3A22%3A12Z&ske=2025-08-27T10%3A22%3A12Z&sks=b&skv=2024-08-04&sig=myIAwAI%2B2lEw3hhAwC/EEhnwLOFambKAs/SnQf5bwI0%3D"
+  },
+
+  {
     id: 1756271605,
     slug: "wijsheid-van-basbeem",
     title: "Wijsheid van basbeem",
