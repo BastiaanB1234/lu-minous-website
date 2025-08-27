@@ -13,6 +13,7 @@ const navigation = [
   { name: 'Community', href: '/community' },
   { name: 'Store', href: '/store' },
   { name: 'About', href: '/about' },
+  { name: 'Admin', href: '/admin' },
 ]
 
 export default function Header() {
