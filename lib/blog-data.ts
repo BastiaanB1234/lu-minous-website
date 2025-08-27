@@ -1,6 +1,23 @@
 // Import blog posts data
 const blogPosts = [
   {
+    id: 1756273379,
+    slug: "wijsheid-van-basbeem",
+    title: "Wijsheid van basbeem",
+    excerpt: "“Real love feels like peace,   and you deserve nothing less.”  Have you ever known a love that feels like peace? Not chaos. Not fear. Not walking on eggshells. But peace.  A love where you can brea...",
+    content: `# Wijsheid van basbeem\n\n“Real love feels like peace, \n and you deserve nothing less.”\n\nHave you ever known a love that feels like peace?\nNot chaos. Not fear. Not walking on eggshells.\nBut peace.\n\nA love where you can breathe fully.\nWhere you are safe to be all of you.\nWhere even silence feels like home.\n\nI have never felt so much rest within myself,\nand with him.\nTogether or apart\nThe peace remains.\n\nI adore him for who he is.\nI respect the way he protects me,\nthe way he pushes me to grow,\nembraces me when I need to rest,\nchecks in simply to see if I’m okay.\n\nAnd I also respect the way he carries himself.\nHis humor that lights up the room.\nThe way he cares.... \ndeeply, \nsincerely,\nnot because he has to,\nbut because it’s who he is.\n\nThis is love.\nNot heavy. Not confusing.\nBut steady. Nurturing. Freeing.\n\nThe kind of love that makes you more of yourself,\nthat breathes life into your soul,\nthat feels like coming home.\n\nAnd my wish…\n\nis that everyone reading this may one day know this kind of love too.\n\nBecause you are worthy of it. Always...\n\n## Reflectie\n\nDeze wijsheid nodigt uit tot diepe reflectie en persoonlijke groei.`,
+    author: "Lu Minous",
+    published_at: "2025-08-27T07:42:48.663032",
+    status: "published" as const,
+    featured: false,
+    created_at: "2025-08-27T07:42:48.663024",
+    updated_at: "2025-08-27T07:42:48.663030",
+    category: "Spiritual Growth",
+    tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
+    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-FnWiyV54ccfsMAeZoxzgYnnS.png?st=2025-08-27T04%3A42%3A59Z&se=2025-08-27T06%3A42%3A59Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=77e5a8ec-6bd1-4477-8afc-16703a64f029&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-27T04%3A02%3A18Z&ske=2025-08-28T04%3A02%3A18Z&sks=b&skv=2024-08-04&sig=Xz7JHWzOAyVDjoouVNhQXRHMfRRhhREqqvBLjEfEN0U%3D"
+  },
+
+  {
     id: 1756271852,
     slug: "wijsheid-van-basbeem",
     title: "Wijsheid van basbeem",
@@ -47,7 +64,7 @@ const blogPosts = [
     created_at: "2025-08-27T07:13:13.349011",
     updated_at: "2025-08-27T07:13:13.349016",
     category: "Spiritual Growth",
-    tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],,
+    tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
     image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-Fvq8uDuG2AtWaPrw551IbKN0.png?st=2025-08-27T04%3A13%3A25Z&se=2025-08-27T06%3A13%3A25Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=b1a0ae1f-618f-4548-84fd-8b16cacd5485&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-27T00%3A01%3A18Z&ske=2025-08-28T00%3A01%3A18Z&sks=b&skv=2024-08-04&sig=iGLvvsJpU6fnQgqQGZpMJQtlN9%2BheJAMgWzFR25293E%3D"
   },
 
