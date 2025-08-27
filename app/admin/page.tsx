@@ -41,11 +41,15 @@ export default function AdminPage() {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('/api/admin/posts')
+      // For now, we'll use the JSON data directly
+      // Later we can implement a proper admin API
+      const response = await fetch('/api/blog/posts')
       const data = await response.json()
       setPosts(data.posts || [])
     } catch (error) {
       console.error('Error fetching posts:', error)
+      // Fallback to empty posts for now
+      setPosts([])
     } finally {
       setLoading(false)
     }

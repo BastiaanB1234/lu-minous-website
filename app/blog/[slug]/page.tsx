@@ -1,12 +1,12 @@
 import Link from 'next/link'
 import { Calendar, Clock, User, ArrowLeft, Share2, Heart, MessageCircle } from 'lucide-react'
-import { getDatabase } from '@/lib/database'
+import { getBlogDataService } from '@/lib/blog-data'
 import { notFound } from 'next/navigation'
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   try {
-    const db = await getDatabase()
-    const post = await db.getPostBySlug(params.slug)
+    const dataService = await getBlogDataService()
+    const post = await dataService.getPostBySlug(params.slug)
     
     if (!post) {
       notFound()

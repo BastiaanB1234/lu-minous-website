@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { Calendar, User, ArrowRight, Star } from 'lucide-react'
-import { getDatabase } from '@/lib/database'
+import { getBlogDataService } from '@/lib/blog-data'
 
 export default async function BlogPage() {
   try {
-    const db = await getDatabase()
-    const posts = await db.getPublishedPosts()
+    const dataService = await getBlogDataService()
+    const posts = await dataService.getPublishedPosts()
 
     // Get featured post (first published post)
     const featuredPost = posts.find(post => post.featured) || posts[0]
