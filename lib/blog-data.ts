@@ -78,7 +78,7 @@ export interface Tag {
 
 // Blog data service using JSON files
 export class BlogDataService {
-  private posts: BlogPost[] = blogPosts
+  private posts: BlogPost[] = blogPosts as unknown as BlogPost[]
 
   // Get all posts
   async getAllPosts(): Promise<BlogPost[]> {
@@ -172,7 +172,7 @@ export class BlogDataService {
       }
     })
 
-    return Array.from(tags.entries()).map(([slug, { count, name }]) => ({
+    return Array.from(tags.entries()).map(([slug, { name }]) => ({
       id: slug.length, // Simple ID generation
       name,
       slug: slug.toLowerCase().replace(/\s+/g, '-')
