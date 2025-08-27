@@ -13,7 +13,8 @@ const blogPosts = [
     created_at: "2024-08-27T00:00:00.000Z",
     updated_at: "2024-08-27T00:00:00.000Z",
     category: "Spiritual Growth",
-    tags: ["Spiritual Growth", "Self-Awareness", "Daily Practices", "Community"]
+    tags: ["Spiritual Growth", "Self-Awareness", "Daily Practices", "Community"],
+    image_url: "/images/eye-of-horus-placeholder.png"
   },
   {
     id: 2,
@@ -28,14 +29,15 @@ const blogPosts = [
     created_at: "2024-08-26T00:00:00.000Z",
     updated_at: "2024-08-26T00:00:00.000Z",
     category: "Meditation",
-    tags: ["Meditation", "Beginners", "Breath Awareness", "Mindfulness"]
+    tags: ["Meditation", "Beginners", "Breath Awareness", "Mindfulness"],
+    image_url: "/images/eye-of-horus-placeholder.png"
   },
   {
     id: 3,
     slug: "community-connection",
     title: "Building Authentic Connections in Your Spiritual Community",
     excerpt: "How to create meaningful relationships with like-minded souls on your spiritual journey.",
-    content: "Building authentic connections in your spiritual community is essential for growth and support. Here's how to create meaningful relationships that nourish your soul.\n\n## The Importance of Community\n\nSpiritual growth doesn't happen in isolation. We need others to reflect our journey, share wisdom, and provide support during challenging times. A spiritual community offers:\n\n- Shared experiences and understanding\n- Collective wisdom and knowledge\n- Emotional support and encouragement\n- Accountability and motivation\n- Celebration of milestones\n\n## Finding Your Tribe\n\nLook for people who resonate with your values and spiritual path. They might be found in:\n\n- Local meditation groups\n- Spiritual centers or churches\n- Online communities and forums\n- Workshops and retreats\n- Book clubs focused on spiritual topics\n\n## Building Authentic Relationships\n\nAuthentic connections are built on:\n\n- **Vulnerability:** Share your struggles and triumphs\n- **Active listening:** Truly hear what others are saying\n- **Non-judgment:** Accept others as they are\n- **Reciprocity:** Give and receive support equally\n- **Boundaries:** Respect your own and others' limits\n\n## Nurturing Your Connections\n\nOnce you've found your community, nurture these relationships:\n\n- **Regular check-ins:** Stay connected with regular communication\n- **Shared practices:** Meditate or practice together\n- **Celebrate together:** Mark important milestones\n- **Support during challenges:** Be there when others need you\n- **Grow together:** Share resources and insights\n\n## Overcoming Common Challenges\n\nBuilding community isn't always easy. Common challenges include:\n\n- **Finding the right people:** It may take time to find your tribe\n- **Scheduling conflicts:** Life can get busy\n- **Different levels of commitment:** Not everyone will be at the same place\n- **Conflict resolution:** Disagreements are natural\n\n## Creating Your Own Community\n\nIf you can't find the right community, consider creating one:\n\n- Start a small meditation group\n- Host spiritual book discussions\n- Organize nature walks or retreats\n- Create an online space for connection\n- Lead workshops on topics you're passionate about\n\n## The Power of Connection\n\nRemember, authentic spiritual connections are one of the greatest gifts of the spiritual journey. They remind us that we're not alone, that our experiences are shared, and that together we can grow stronger and wiser.\n\nTake the first step today. Reach out to someone in your spiritual community, or if you don't have one yet, start building it. Your future self will thank you.",
+    content: "Building authentic connections in your spiritual community is essential for growth and support. Here's how to create meaningful relationships that nourish your soul.\n\n## The Importance of Community\n\nSpiritual growth doesn't happen in isolation. We need others to reflect our journey, share wisdom, and provide support during challenging times. A spiritual community offers:\n\n- Shared experiences and understanding\n- Collective wisdom and knowledge\n- Emotional support and encouragement\n- Accountability and motivation\n- Celebration of milestones\n\n## Finding Your Tribe\n\nLook for people who resonate with your values and spiritual path. They might be found in:\n\n- Local meditation groups\n- Spiritual centers or churches\n- Online communities and forums\n- Workshops and retreats\n- Book clubs focused on spiritual topics\n\n## Building Authentic Relationships\n\nAuthentic connections are built on:\n\n- **Vulnerability:** Share your struggles and triumphs\n- **Active listening:** Truly hear what others are saying\n- **Non-judgment:** Accept others as they are\n- **Reciprocity:** Give and receive support equally\n- **Boundaries:** Respect your own and others' limits\n\n## Nurturing Your Connections\n\nOnce you've found your community, nurture these relationships:\n\n- **Regular check-ins:** Stay connected with regular communication\n- **Shared practices:** Meditate or practice together\n- **Celebrate together:** Mark important milestones\n- **Support during challenges:** Be there when others need you\n- **Grow together:** Share resources and insights\n\n## Overcoming Common Challenges\n\nBuilding community isn't always easy. Common challenges include:\n\n- **Finding the right people:** It may take time to find your tribe\n- **Different levels of commitment:** Not everyone will be at the same place\n- **Conflict resolution:** Disagreements are natural\n\n## Creating Your Own Community\n\nIf you can't find the right community, consider creating one:\n\n- Start a small meditation group\n- Host spiritual book discussions\n- Organize nature walks or retreats\n- Create an online space for connection\n- Lead workshops on topics you're passionate about\n\n## The Power of Connection\n\nRemember, authentic spiritual connections are one of the greatest gifts of the spiritual journey. They remind us that we're not alone, that our experiences are shared, and that together we can grow stronger and wiser.\n\nTake the first step today. Reach out to someone in your spiritual community, or if you don't have one yet, start building it. Your future self will thank you.",
     author: "Lu Minous",
     published_at: "2024-08-25T00:00:00.000Z",
     status: "published" as const,
@@ -43,7 +45,8 @@ const blogPosts = [
     created_at: "2024-08-25T00:00:00.000Z",
     updated_at: "2024-08-25T00:00:00.000Z",
     category: "Community",
-    tags: ["Community", "Connection", "Relationships", "Support"]
+    tags: ["Community", "Connection", "Relationships", "Support"],
+    image_url: "/images/eye-of-horus-placeholder.png"
   }
 ] as const
 
