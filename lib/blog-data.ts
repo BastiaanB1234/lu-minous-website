@@ -1,6 +1,107 @@
 // Import blog posts data
 const blogPosts = [
   {
+    id: 1756273379,
+    slug: "wijsheid-van-basbeem",
+    title: "Wijsheid van basbeem",
+    excerpt: "“Real love feels like peace,   and you deserve nothing less.”  Have you ever known a love that feels like peace? Not chaos. Not fear. Not walking on eggshells. But peace.  A love where you can brea...",
+    content: `# Wijsheid van basbeem\n\n“Real love feels like peace, \n and you deserve nothing less.”\n\nHave you ever known a love that feels like peace?\nNot chaos. Not fear. Not walking on eggshells.\nBut peace.\n\nA love where you can breathe fully.\nWhere you are safe to be all of you.\nWhere even silence feels like home.\n\nI have never felt so much rest within myself,\nand with him.\nTogether or apart\nThe peace remains.\n\nI adore him for who he is.\nI respect the way he protects me,\nthe way he pushes me to grow,\nembraces me when I need to rest,\nchecks in simply to see if I’m okay.\n\nAnd I also respect the way he carries himself.\nHis humor that lights up the room.\nThe way he cares.... \ndeeply, \nsincerely,\nnot because he has to,\nbut because it’s who he is.\n\nThis is love.\nNot heavy. Not confusing.\nBut steady. Nurturing. Freeing.\n\nThe kind of love that makes you more of yourself,\nthat breathes life into your soul,\nthat feels like coming home.\n\nAnd my wish…\n\nis that everyone reading this may one day know this kind of love too.\n\nBecause you are worthy of it. Always...\n\n## Reflectie\n\nDeze wijsheid nodigt uit tot diepe reflectie en persoonlijke groei.`,
+    author: "Lu Minous",
+    published_at: "2025-08-27T07:42:48.663032",
+    status: "published" as const,
+    featured: false,
+    created_at: "2025-08-27T07:42:48.663024",
+    updated_at: "2025-08-27T07:42:48.663030",
+    category: "Spiritual Growth",
+    tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
+    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-FnWiyV54ccfsMAeZoxzgYnnS.png?st=2025-08-27T04%3A42%3A59Z&se=2025-08-27T06%3A42%3A59Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=77e5a8ec-6bd1-4477-8afc-16703a64f029&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-27T04%3A02%3A18Z&ske=2025-08-28T04%3A02%3A18Z&sks=b&skv=2024-08-04&sig=Xz7JHWzOAyVDjoouVNhQXRHMfRRhhREqqvBLjEfEN0U%3D"
+  },
+
+  {
+    id: 1756271852,
+    slug: "wijsheid-van-basbeem",
+    title: "Wijsheid van basbeem",
+    excerpt: "“Real love feels like peace,   and you deserve nothing less.”  Have you ever known a love that feels like peace? Not chaos. Not fear. Not walking on eggshells. But peace.  A love where you can brea...",
+    content: `# Wijsheid van basbeem\n\n“Real love feels like peace, \n and you deserve nothing less.”\n\nHave you ever known a love that feels like peace?\nNot chaos. Not fear. Not walking on eggshells.\nBut peace.\n\nA love where you can breathe fully.\nWhere you are safe to be all of you.\nWhere even silence feels like home.\n\nI have never felt so much rest within myself,\nand with him.\nTogether or apart\nThe peace remains.\n\nI adore him for who he is.\nI respect the way he protects me,\nthe way he pushes me to grow,\nembraces me when I need to rest,\nchecks in simply to see if I’m okay.\n\nAnd I also respect the way he carries himself.\nHis humor that lights up the room.\nThe way he cares.... \ndeeply, \nsincerely,\nnot because he has to,\nbut because it’s who he is.\n\nThis is love.\nNot heavy. Not confusing.\nBut steady. Nurturing. Freeing.\n\nThe kind of love that makes you more of yourself,\nthat breathes life into your soul,\nthat feels like coming home.\n\nAnd my wish…\n\nis that everyone reading this may one day know this kind of love too.\n\nBecause you are worthy of it. Always...\n\n## Reflectie\n\nDeze wijsheid nodigt uit tot diepe reflectie en persoonlijke groei.`,
+    author: "Lu Minous",
+    published_at: "2025-08-27T07:17:21.242965",
+    status: "published" as const,
+    featured: false,
+    created_at: "2025-08-27T07:17:21.242959",
+    updated_at: "2025-08-27T07:17:21.242963",
+    category: "Spiritual Growth",
+    tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
+    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-Rjwzh4MCjz1nuRoMtqTjjFnY.png?st=2025-08-27T04%3A17%3A32Z&se=2025-08-27T06%3A17%3A32Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=f1dafa11-a0c2-4092-91d4-10981fbda051&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T08%3A59%3A46Z&ske=2025-08-27T08%3A59%3A46Z&sks=b&skv=2024-08-04&sig=Vw%2Bsoy28brBoxPL/5nt10E/tA3/M8CComV0864LnITI%3D"
+  },
+
+  {
+    id: 1756271727,
+    slug: "embracing-peaceful-love-a-journey-to-wholeness",
+    title: "Embracing Peaceful Love: A Journey to Wholeness",
+    excerpt: "Discover the transformative power of love that feels like peace and embrace the essence of true connection.",
+    content: `Love that feels like peace is a rare gem in a world filled with chaos and noise. It is a sanctuary where you can fully exhale, where your soul finds solace in the presence of another. In a society that often glorifies tumultuous relationships, finding a love that offers tranquility and security can feel like discovering a hidden treasure. Basbeem's heartfelt message beautifully encapsulates the essence of a love that nurtures, uplifts, and liberates. It serves as a gentle reminder that we all deserve to experience a love that enriches our lives and helps us grow into the best versions of ourselves. As you reflect on Basbeem's words, consider the relationships in your life. Do they bring you peace? Do they make you feel safe and valued? Are you able to be your authentic self without fear of judgment or rejection? Cultivating a love that feels like peace requires a deep sense of self-awareness, empathy, and vulnerability. It involves honoring your boundaries, communicating openly, and actively listening to your partner's needs. It means showing up for each other with kindness, respect, and unwavering support. True love is not about possessiveness or control; it is about mutual growth, acceptance, and a shared journey towards wholeness. When you find someone who cherishes you for who you are, who uplifts you in times of need, and who encourages you to reach your full potential, hold onto that love with gratitude and reverence. Nurture it, cherish it, and allow it to blossom into a beautiful tapestry of shared experiences, laughter, and growth. And if you have yet to encounter a love that feels like peace, have faith that it exists. Trust in the divine timing of the universe and remain open to the possibilities that lie ahead. Your heart is deserving of a love that soothes your spirit, ignites your passion, and empowers you to shine brightly in the world. May Basbeem's words serve as a beacon of hope and inspiration as you continue your journey towards finding or nurturing a love that feels like peace.`,
+    author: "Lu Minous",
+    published_at: "2025-08-27T07:15:13.285891",
+    status: "published" as const,
+    featured: false,
+    created_at: "2025-08-27T07:15:13.285881",
+    updated_at: "2025-08-27T07:15:13.285889",
+    category: "Personal Development",
+    tags: ["love", "peace", "relationships", "personal growth", "spirituality"],
+    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-Re5lwCO4cxrgd84iidTHT5TH.png?st=2025-08-27T04%3A15%3A27Z&se=2025-08-27T06%3A15%3A27Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=b1a0ae1f-618f-4548-84fd-8b16cacd5485&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T10%3A22%3A12Z&ske=2025-08-27T10%3A22%3A12Z&sks=b&skv=2024-08-04&sig=myIAwAI%2B2lEw3hhAwC/EEhnwLOFambKAs/SnQf5bwI0%3D"
+  },
+
+  {
+    id: 1756271605,
+    slug: "wijsheid-van-basbeem",
+    title: "Wijsheid van basbeem",
+    excerpt: "“Real love feels like peace,   and you deserve nothing less.”  Have you ever known a love that feels like peace? Not chaos. Not fear. Not walking on eggshells. But peace.  A love where you can brea...",
+    content: `# Wijsheid van basbeem\n\n“Real love feels like peace, \n and you deserve nothing less.”\n\nHave you ever known a love that feels like peace?\nNot chaos. Not fear. Not walking on eggshells.\nBut peace.\n\nA love where you can breathe fully.\nWhere you are safe to be all of you.\nWhere even silence feels like home.\n\nI have never felt so much rest within myself,\nand with him.\nTogether or apart\nThe peace remains.\n\nI adore him for who he is.\nI respect the way he protects me,\nthe way he pushes me to grow,\nembraces me when I need to rest,\nchecks in simply to see if I’m okay.\n\nAnd I also respect the way he carries himself.\nHis humor that lights up the room.\nThe way he cares.... \ndeeply, \nsincerely,\nnot because he has to,\nbut because it’s who he is.\n\nThis is love.\nNot heavy. Not confusing.\nBut steady. Nurturing. Freeing.\n\nThe kind of love that makes you more of yourself,\nthat breathes life into your soul,\nthat feels like coming home.\n\nAnd my wish…\n\nis that everyone reading this may one day know this kind of love too.\n\nBecause you are worthy of it. Always...\n\n## Reflectie\n\nDeze wijsheid nodigt uit tot diepe reflectie en persoonlijke groei.`,
+    author: "Lu Minous",
+    published_at: "2025-08-27T07:13:13.349018",
+    status: "published" as const,
+    featured: false,
+    created_at: "2025-08-27T07:13:13.349011",
+    updated_at: "2025-08-27T07:13:13.349016",
+    category: "Spiritual Growth",
+    tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
+    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-Fvq8uDuG2AtWaPrw551IbKN0.png?st=2025-08-27T04%3A13%3A25Z&se=2025-08-27T06%3A13%3A25Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=b1a0ae1f-618f-4548-84fd-8b16cacd5485&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-27T00%3A01%3A18Z&ske=2025-08-28T00%3A01%3A18Z&sks=b&skv=2024-08-04&sig=iGLvvsJpU6fnQgqQGZpMJQtlN9%2BheJAMgWzFR25293E%3D"
+  },
+
+  {
+    id: 1756271502,
+    slug: "wijsheid-van-basbeem",
+    title: "Wijsheid van basbeem",
+    excerpt: "“Real love feels like peace,   and you deserve nothing less.”  Have you ever known a love that feels like peace? Not chaos. Not fear. Not walking on eggshells. But peace.  A love where you can brea...",
+    content: `# Wijsheid van basbeem\n\n“Real love feels like peace, \n and you deserve nothing less.”\n\nHave you ever known a love that feels like peace?\nNot chaos. Not fear. Not walking on eggshells.\nBut peace.\n\nA love where you can breathe fully.\nWhere you are safe to be all of you.\nWhere even silence feels like home.\n\nI have never felt so much rest within myself,\nand with him.\nTogether or apart\nThe peace remains.\n\nI adore him for who he is.\nI respect the way he protects me,\nthe way he pushes me to grow,\nembraces me when I need to rest,\nchecks in simply to see if I’m okay.\n\nAnd I also respect the way he carries himself.\nHis humor that lights up the room.\nThe way he cares.... \ndeeply, \nsincerely,\nnot because he has to,\nbut because it’s who he is.\n\nThis is love.\nNot heavy. Not confusing.\nBut steady. Nurturing. Freeing.\n\nThe kind of love that makes you more of yourself,\nthat breathes life into your soul,\nthat feels like coming home.\n\nAnd my wish…\n\nis that everyone reading this may one day know this kind of love too.\n\nBecause you are worthy of it. Always...\n\n## Reflectie\n\nDeze wijsheid nodigt uit tot diepe reflectie en persoonlijke groei.`,
+    author: "Lu Minous",
+    published_at: "2025-08-27T07:11:30.776720",
+    status: "published" as const,
+    featured: false,
+    created_at: "2025-08-27T07:11:30.776692",
+    updated_at: "2025-08-27T07:11:30.776718",
+    category: "Spiritual Growth",
+    tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
+    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-nVTdAmTuMRibQI1Q2GwtO1Ou.png?st=2025-08-27T04%3A11%3A42Z&se=2025-08-27T06%3A11%3A42Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=b1a0ae1f-618f-4548-84fd-8b16cacd5485&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T08%3A43%3A54Z&ske=2025-08-27T08%3A43%3A54Z&sks=b&skv=2024-08-04&sig=w/rAVN4Y/StRZ%2BavXubiFyy/WWMPr7GErkD3DrnEdEo%3D"
+  },
+
+  {
+    id: 1756271203,
+    slug: "wijsheid-van-basbeem",
+    title: "Wijsheid van basbeem",
+    excerpt: "“Real love feels like peace,   and you deserve nothing less.”  Have you ever known a love that feels like peace? Not chaos. Not fear. Not walking on eggshells. But peace.  A love where you can brea...",
+    content: `# Wijsheid van basbeem\n\n“Real love feels like peace, \n and you deserve nothing less.”\n\nHave you ever known a love that feels like peace?\nNot chaos. Not fear. Not walking on eggshells.\nBut peace.\n\nA love where you can breathe fully.\nWhere you are safe to be all of you.\nWhere even silence feels like home.\n\nI have never felt so much rest within myself,\nand with him.\nTogether or apart\nThe peace remains.\n\nI adore him for who he is.\nI respect the way he protects me,\nthe way he pushes me to grow,\nembraces me when I need to rest,\nchecks in simply to see if I’m okay.\n\nAnd I also respect the way he carries himself.\nHis humor that lights up the room.\nThe way he cares.... \ndeeply, \nsincerely,\nnot because he has to,\nbut because it’s who he is.\n\nThis is love.\nNot heavy. Not confusing.\nBut steady. Nurturing. Freeing.\n\nThe kind of love that makes you more of yourself,\nthat breathes life into your soul,\nthat feels like coming home.\n\nAnd my wish…\n\nis that everyone reading this may one day know this kind of love too.\n\nBecause you are worthy of it. Always...\n\n## Reflectie\n\nDeze wijsheid nodigt uit tot diepe reflectie en persoonlijke groei.`,
+    author: "Lu Minous",
+    published_at: "2025-08-27T07:06:33.004748",
+    status: "published" as const,
+    featured: false,
+    created_at: "2025-08-27T07:06:33.004738",
+    updated_at: "2025-08-27T07:06:33.004747",
+    category: "Spiritual Growth",
+    tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"]    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-KV2gN8Ieo236sDgoB115WKcZ.png?st=2025-08-27T04%3A06%3A43Z&se=2025-08-27T06%3A06%3A43Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=77e5a8ec-6bd1-4477-8afc-16703a64f029&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T10%3A25%3A45Z&ske=2025-08-27T10%3A25%3A45Z&sks=b&skv=2024-08-04&sig=ehXvdfBiAoUpe77evZvGYrAG%2BAjXIhW16fNGroLVUBM%3D",
+  },
+
+  {
     id: 1,
     slug: "spiritual-growth-journey",
     title: "Your Spiritual Growth Journey: A Complete Guide",
