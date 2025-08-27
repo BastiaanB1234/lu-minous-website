@@ -247,13 +247,26 @@ class BlogDatabase implements IDatabaseOperations {
   async createPost(post: Omit<BlogPost, 'id' | 'created_at' | 'updated_at'>): Promise<number> {
     if (!this.db) throw new Error('Database not initialized');
     
-    const result = await this.db.run(
-      `INSERT INTO blog_posts (slug, title, excerpt, content, author, status, featured, published_at) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [post.slug, post.title, post.excerpt, post.content, post.author, post.status, post.featured, post.published_at]
-    );
-    
-    return result.lastID!;
+    try {
+      console.log('Executing SQL insert with data:', post);
+      
+      const result = await this.db.run(
+        `INSERT INTO blog_posts (slug, title, excerpt, content, author, status, featured, published_at) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [post.slug, post.title, post.excerpt, post.content, post.author, post.status, post.featured, post.published_at]
+      );
+      
+      console.log('SQL insert result:', result);
+      
+      if (!result.lastID) {
+        throw new Error('No ID returned from insert operation');
+      }
+      
+      return result.lastID;
+    } catch (error) {
+      console.error('Database insert error:', error);
+      throw new Error(`Failed to insert post: ${error instanceof Error ? error.message : 'Unknown database error'}`);
+    }
   }
 
   async updatePost(id: number, updates: Partial<BlogPost>): Promise<void> {

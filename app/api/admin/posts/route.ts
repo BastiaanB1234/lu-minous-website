@@ -23,15 +23,21 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { title, slug, excerpt, content, author, status, featured, published_at } = body;
 
+    console.log('Received post data:', { title, slug, excerpt, content, author, status, featured, published_at });
+
     // Validation
     if (!title || !slug || !content || !author) {
+      console.log('Validation failed: missing required fields');
       return NextResponse.json(
         { error: 'Missing required fields: title, slug, content, author' },
         { status: 400 }
       );
     }
 
+    console.log('Attempting to get database...');
     const db = await getDatabase();
+    console.log('Database obtained, attempting to create post...');
+    
     const postId = await db.createPost({
       title,
       slug,
@@ -43,14 +49,25 @@ export async function POST(request: NextRequest) {
       published_at: published_at || (status === 'published' ? new Date().toISOString() : undefined)
     });
 
+    console.log('Post created successfully with ID:', postId);
+
     return NextResponse.json({ 
       message: 'Post created successfully',
       postId 
     }, { status: 201 });
   } catch (error) {
     console.error('Error creating post:', error);
+    console.error('Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace'
+    });
+    
     return NextResponse.json(
-      { error: 'Failed to create post' },
+      { 
+        error: 'Failed to create post',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
