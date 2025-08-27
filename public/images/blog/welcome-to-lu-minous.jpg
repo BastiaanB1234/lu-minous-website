@@ -1,0 +1,38 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="eye" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#bg)" rx="20"/>
+  
+  <!-- Eye of Horus -->
+  <g transform="translate(200,150)">
+    <!-- Main eye shape -->
+    <ellipse cx="0" cy="0" rx="60" ry="40" fill="white" stroke="#1e3a8a" stroke-width="3"/>
+    
+    <!-- Iris -->
+    <ellipse cx="0" cy="0" rx="35" ry="25" fill="url(#eye)"/>
+    
+    <!-- Pupil -->
+    <circle cx="0" cy="0" r="15" fill="#1e3a8a"/>
+    
+    <!-- Eye markings -->
+    <path d="M-60,-20 Q-80,-40 -60,-60 Q-40,-40 -60,-20" fill="none" stroke="#1e3a8a" stroke-width="4"/>
+    <circle cx="-60" cy="-40" r="8" fill="#1e3a8a"/>
+    
+    <!-- Eyebrow -->
+    <rect x="-70" y="-70" width="140" height="8" fill="#1e3a8a" rx="4"/>
+    <rect x="-60" y="-75" width="120" height="3" fill="white" rx="1.5"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="250" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">LU-MINOUS</text>
+</svg>
