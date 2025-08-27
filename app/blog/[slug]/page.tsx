@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import Image from 'next/image';
 import { Calendar, Clock, User, ArrowLeft, Share2, Heart, MessageCircle } from 'lucide-react';
 import { getBlogPostBySlug } from '@/lib/blog-data';
 import { notFound } from 'next/navigation';
@@ -53,12 +52,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {/* Featured Image */}
           {post.imageUrl && (
             <div className="relative h-96">
-              <Image
+              <img
                 src={post.imageUrl}
                 alt={post.title}
-                fill
-                className="object-cover"
-                priority
+                className="w-full h-full object-cover"
               />
             </div>
           )}
