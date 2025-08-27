@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Calendar, User, ArrowRight, Star } from 'lucide-react'
 import { getBlogDataService } from '@/lib/blog-data'
 
@@ -36,11 +37,12 @@ export default async function BlogPage() {
               {/* Featured Post Image */}
               {featuredPost.image_url && (
                 <div className="relative h-64 md:h-80 overflow-hidden">
-                  <img
+                  <Image
                     src={featuredPost.image_url}
                     alt={featuredPost.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
+                    fill
+                    className="object-cover"
+                    priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                 </div>
@@ -105,11 +107,12 @@ export default async function BlogPage() {
                 {/* Post Image */}
                 {post.image_url && (
                   <div className="relative h-48 overflow-hidden">
-                    <img
+                    <Image
                       src={post.image_url}
                       alt={post.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                   </div>

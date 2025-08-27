@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Calendar, Clock, User, ArrowLeft, Share2, Heart, MessageCircle } from 'lucide-react'
 import { getBlogDataService } from '@/lib/blog-data'
 import { notFound } from 'next/navigation'
@@ -30,11 +31,12 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       {/* Hero Image Section */}
       {post.image_url && (
         <div className="relative w-full h-96 md:h-[500px] overflow-hidden">
-          <img
+          <Image
             src={post.image_url}
             alt={post.title}
-            className="w-full h-full object-cover"
-            loading="lazy"
+            fill
+            className="object-cover"
+            priority
           />
           {/* Image Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
