@@ -98,7 +98,8 @@ const blogPosts = [
     created_at: "2025-08-27T07:06:33.004738",
     updated_at: "2025-08-27T07:06:33.004747",
     category: "Spiritual Growth",
-    tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"]    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-KV2gN8Ieo236sDgoB115WKcZ.png?st=2025-08-27T04%3A06%3A43Z&se=2025-08-27T06%3A06%3A43Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=77e5a8ec-6bd1-4477-8afc-16703a64f029&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T10%3A25%3A45Z&ske=2025-08-27T10%3A25%3A45Z&sks=b&skv=2024-08-04&sig=ehXvdfBiAoUpe77evZvGYrAG%2BAjXIhW16fNGroLVUBM%3D",
+    tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
+    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-KV2gN8Ieo236sDgoB115WKcZ.png?st=2025-08-27T04%3A06%3A43Z&se=2025-08-27T06%3A06%3A43Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=77e5a8ec-6bd1-4477-8afc-16703a64f029&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T10%3A25%3A45Z&ske=2025-08-27T10%3A25%3A45Z&sks=b&skv=2024-08-04&sig=ehXvdfBiAoUpe77evZvGYrAG%2BAjXIhW16fNGroLVUBM%3D",
   },
 
   {
