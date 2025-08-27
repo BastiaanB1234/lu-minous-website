@@ -116,7 +116,7 @@ const blogPosts = [
     updated_at: "2024-08-27T00:00:00.000Z",
     category: "Spiritual Growth",
     tags: ["Spiritual Growth", "Self-Awareness", "Daily Practices", "Community"],
-    image_url: "/images/eye-of-horus-placeholder.png"
+    image_url: "/images/eye-of-horus-placeholder.svg"
   },
   {
     id: 2,
@@ -132,7 +132,7 @@ const blogPosts = [
     updated_at: "2024-08-26T00:00:00.000Z",
     category: "Meditation",
     tags: ["Meditation", "Beginners", "Breath Awareness", "Mindfulness"],
-    image_url: "/images/eye-of-horus-placeholder.png"
+    image_url: "/images/eye-of-horus-placeholder.svg"
   },
   {
     id: 3,
@@ -148,7 +148,7 @@ const blogPosts = [
     updated_at: "2024-08-25T00:00:00.000Z",
     category: "Community",
     tags: ["Community", "Connection", "Relationships", "Support"],
-    image_url: "/images/eye-of-horus-placeholder.png"
+    image_url: "/images/eye-of-horus-placeholder.svg"
   }
 ] as const
 
