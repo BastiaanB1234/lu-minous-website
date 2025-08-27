@@ -14,7 +14,7 @@ const blogPosts = [
     updated_at: "2025-08-27T07:42:48.663030",
     category: "Spiritual Growth",
     tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
-    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-FnWiyV54ccfsMAeZoxzgYnnS.png?st=2025-08-27T04%3A42%3A59Z&se=2025-08-27T06%3A42%3A59Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=77e5a8ec-6bd1-4477-8afc-16703a64f029&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-27T04%3A02%3A18Z&ske=2025-08-28T04%3A02%3A18Z&sks=b&skv=2024-08-04&sig=Xz7JHWzOAyVDjoouVNhQXRHMfRRhhREqqvBLjEfEN0U%3D"
+    image_url: "/images/eye-of-horus-placeholder.svg"
   },
 
   {
@@ -31,7 +31,7 @@ const blogPosts = [
     updated_at: "2025-08-27T07:17:21.242963",
     category: "Spiritual Growth",
     tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
-    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-Rjwzh4MCjz1nuRoMtqTjjFnY.png?st=2025-08-27T04%3A17%3A32Z&se=2025-08-27T06%3A17%3A32Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=f1dafa11-a0c2-4092-91d4-10981fbda051&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T08%3A59%3A46Z&ske=2025-08-27T08%3A59%3A46Z&sks=b&skv=2024-08-04&sig=Vw%2Bsoy28brBoxPL/5nt10E/tA3/M8CComV0864LnITI%3D"
+    image_url: "/images/eye-of-horus-placeholder.svg"
   },
 
   {
@@ -48,7 +48,7 @@ const blogPosts = [
     updated_at: "2025-08-27T07:15:13.285889",
     category: "Personal Development",
     tags: ["love", "peace", "relationships", "personal growth", "spirituality"],
-    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-Re5lwCO4cxrgd84iidTHT5TH.png?st=2025-08-27T04%3A15%3A27Z&se=2025-08-27T06%3A15%3A27Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=b1a0ae1f-618f-4548-84fd-8b16cacd5485&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T10%3A22%3A12Z&ske=2025-08-27T10%3A22%3A12Z&sks=b&skv=2024-08-04&sig=myIAwAI%2B2lEw3hhAwC/EEhnwLOFambKAs/SnQf5bwI0%3D"
+    image_url: "/images/eye-of-horus-placeholder.svg"
   },
 
   {
@@ -65,7 +65,7 @@ const blogPosts = [
     updated_at: "2025-08-27T07:13:13.349016",
     category: "Spiritual Growth",
     tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
-    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-Fvq8uDuG2AtWaPrw551IbKN0.png?st=2025-08-27T04%3A13%3A25Z&se=2025-08-27T06%3A13%3A25Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=b1a0ae1f-618f-4548-84fd-8b16cacd5485&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-27T00%3A01%3A18Z&ske=2025-08-28T00%3A01%3A18Z&sks=b&skv=2024-08-04&sig=iGLvvsJpU6fnQgqQGZpMJQtlN9%2BheJAMgWzFR25293E%3D"
+    image_url: "/images/eye-of-horus-placeholder.svg"
   },
 
   {
@@ -82,7 +82,7 @@ const blogPosts = [
     updated_at: "2025-08-27T07:11:30.776718",
     category: "Spiritual Growth",
     tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
-    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-nVTdAmTuMRibQI1Q2GwtO1Ou.png?st=2025-08-27T04%3A11%3A42Z&se=2025-08-27T06%3A11%3A42Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=b1a0ae1f-618f-4548-84fd-8b16cacd5485&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T08%3A43%3A54Z&ske=2025-08-27T08%3A43%3A54Z&sks=b&skv=2024-08-04&sig=w/rAVN4Y/StRZ%2BavXubiFyy/WWMPr7GErkD3DrnEdEo%3D"
+    image_url: "/images/eye-of-horus-placeholder.svg"
   },
 
   {
@@ -99,7 +99,7 @@ const blogPosts = [
     updated_at: "2025-08-27T07:06:33.004747",
     category: "Spiritual Growth",
     tags: ["Wijsheid", "Reflectie", "Persoonlijke Groei"],
-    image_url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-qpnZl0SRgFEUdruNGsNxPlrL/user-B3zAwXGfLGOUGpjaopui3F1o/img-KV2gN8Ieo236sDgoB115WKcZ.png?st=2025-08-27T04%3A06%3A43Z&se=2025-08-27T06%3A06%3A43Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=77e5a8ec-6bd1-4477-8afc-16703a64f029&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-26T10%3A25%3A45Z&ske=2025-08-27T10%3A25%3A45Z&sks=b&skv=2024-08-04&sig=ehXvdfBiAoUpe77evZvGYrAG%2BAjXIhW16fNGroLVUBM%3D",
+    image_url: "/images/eye-of-horus-placeholder.svg",
   },
 
   {
@@ -116,7 +116,7 @@ const blogPosts = [
     updated_at: "2024-08-27T00:00:00.000Z",
     category: "Spiritual Growth",
     tags: ["Spiritual Growth", "Self-Awareness", "Daily Practices", "Community"],
-    image_url: "/images/eye-of-horus-placeholder.png"
+    image_url: "/images/eye-of-horus-placeholder.svg"
   },
   {
     id: 2,
@@ -132,7 +132,7 @@ const blogPosts = [
     updated_at: "2024-08-26T00:00:00.000Z",
     category: "Meditation",
     tags: ["Meditation", "Beginners", "Breath Awareness", "Mindfulness"],
-    image_url: "/images/eye-of-horus-placeholder.png"
+    image_url: "/images/eye-of-horus-placeholder.svg"
   },
   {
     id: 3,
@@ -148,7 +148,7 @@ const blogPosts = [
     updated_at: "2024-08-25T00:00:00.000Z",
     category: "Community",
     tags: ["Community", "Connection", "Relationships", "Support"],
-    image_url: "/images/eye-of-horus-placeholder.png"
+    image_url: "/images/eye-of-horus-placeholder.svg"
   }
 ] as const
 
