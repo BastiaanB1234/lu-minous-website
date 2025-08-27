@@ -1,166 +1,138 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { Calendar, Clock, User, ArrowLeft, Share2, Heart, MessageCircle } from 'lucide-react'
-import { getBlogDataService } from '@/lib/blog-data'
-import { notFound } from 'next/navigation'
+import { Metadata } from 'next';
+import Image from 'next/image';
+import { Calendar, Clock, User, ArrowLeft, Share2, Heart, MessageCircle } from 'lucide-react';
+import { getBlogPostBySlug } from '@/lib/blog-data';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  try {
-    const dataService = await getBlogDataService()
-    const post = await dataService.getPostBySlug(params.slug)
-    
-    if (!post) {
-      notFound()
-    }
+interface BlogPostPageProps {
+  params: { slug: string };
+}
+
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const post = getBlogPostBySlug(params.slug);
+  
+  if (!post) {
+    return {
+      title: 'Post Not Found - Lu Minous',
+    };
+  }
+
+  return {
+    title: `${post.title} - Lu Minous`,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      images: post.imageUrl ? [post.imageUrl] : [],
+    },
+  };
+}
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const post = getBlogPostBySlug(params.slug);
+
+  if (!post) {
+    notFound();
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Back to Blog */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="mx-auto max-w-4xl px-6 py-4 lg:px-8">
-          <Link
-            href="/blog"
-            className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors duration-200"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Blog
-          </Link>
-        </div>
-      </div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Back Button */}
+        <Link
+          href="/blog"
+          className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Blog
+        </Link>
 
-      {/* Hero Image Section */}
-      {post.image_url && (
-        <div className="relative w-full h-96 md:h-[500px] overflow-hidden">
-          <Image
-            src={post.image_url}
-            alt={post.title}
-            fill
-            className="object-cover"
-            priority
-          />
-          {/* Image Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
-            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-              <div className="mx-auto max-w-4xl">
-                <div className="inline-flex items-center rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-sm font-medium text-white mb-4">
-                  {post.featured ? 'Featured Post' : 'Blog Post'}
-                </div>
-                <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-4">
-                  {post.title}
-                </h1>
-                {post.excerpt && (
-                  <p className="text-xl leading-8 text-white/90 mb-6 max-w-3xl">
-                    {post.excerpt}
-                  </p>
-                )}
-                <div className="flex items-center space-x-6 text-sm text-white/80">
-                  <div className="flex items-center space-x-2">
-                    <User className="h-4 w-4" />
-                    <span>{post.author}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>{new Date(post.published_at || post.created_at || '').toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4" />
-                    <span>{Math.ceil(post.content.split(' ').length / 200)} min read</span>
-                  </div>
-                </div>
+        {/* Article Header */}
+        <article className="bg-white rounded-lg shadow-lg overflow-hidden">
+          {/* Featured Image */}
+          {post.imageUrl && (
+            <div className="relative h-96">
+              <Image
+                src={post.imageUrl}
+                alt={post.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
+
+          <div className="p-8">
+            {/* Meta Information */}
+            <div className="flex items-center space-x-6 text-sm text-gray-500 mb-6">
+              <div className="flex items-center">
+                <User className="h-4 w-4 mr-2" />
+                {post.author}
+              </div>
+              <div className="flex items-center">
+                <Calendar className="h-4 w-4 mr-2" />
+                {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </div>
+              <div className="flex items-center">
+                <Clock className="h-4 w-4 mr-2" />
+                {post.readTime} min read
               </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* Article Header (when no image) */}
-      {!post.image_url && (
-        <div className="bg-white border-b border-gray-200">
-          <div className="mx-auto max-w-4xl px-6 py-12 lg:px-8">
-            <div className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-6">
-              {post.featured ? 'Featured Post' : 'Blog Post'}
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-6">
+            {/* Title */}
+            <h1 className="text-3xl font-bold text-gray-900 mb-6">
               {post.title}
             </h1>
-            {post.excerpt && (
-              <p className="text-xl leading-8 text-gray-600 mb-8">
-                {post.excerpt}
-              </p>
-            )}
-            <div className="flex items-center space-x-6 text-sm text-gray-500 mb-6">
-              <div className="flex items-center space-x-2">
-                <User className="h-4 w-4" />
-                <span>{post.author}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4" />
-                <span>{new Date(post.published_at || post.created_at || '').toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Clock className="h-4 w-4" />
-                <span>{Math.ceil(post.content.split(' ').length / 200)} min read</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Article Content */}
-      <div className="bg-white">
-        <div className="mx-auto max-w-4xl px-6 py-12 lg:px-8">
-          <article className="prose prose-lg max-w-none">
-            <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
-              {post.content}
+            {/* Excerpt */}
+            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              {post.excerpt}
+            </p>
+
+            {/* Tags */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-8">
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Content */}
+            <div className="prose prose-lg max-w-none">
+              <div dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br>') }} />
             </div>
-          </article>
-          
-          {/* Article Actions */}
-          <div className="mt-12 pt-8 border-t border-gray-200">
-            <div className="flex items-center justify-between">
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-between mt-12 pt-8 border-t border-gray-200">
               <div className="flex items-center space-x-4">
-                <button className="flex items-center space-x-2 text-gray-500 hover:text-red-500 transition-colors duration-200">
-                  <Heart className="h-5 w-5" />
-                  <span>Like</span>
+                <button className="flex items-center text-gray-500 hover:text-red-500 transition-colors">
+                  <Heart className="h-5 w-5 mr-2" />
+                  Like
                 </button>
-                <button className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors duration-200">
-                  <MessageCircle className="h-5 w-5" />
-                  <span>Comment</span>
+                <button className="flex items-center text-gray-500 hover:text-blue-500 transition-colors">
+                  <MessageCircle className="h-5 w-5 mr-2" />
+                  Comment
                 </button>
               </div>
-              <button className="flex items-center space-x-2 text-gray-500 hover:text-gray-700 transition-colors duration-200">
-                <Share2 className="h-5 w-5" />
-                <span>Share</span>
+              <button className="flex items-center text-gray-500 hover:text-gray-700 transition-colors">
+                <Share2 className="h-5 w-5 mr-2" />
+                Share
               </button>
             </div>
           </div>
-        </div>
+        </article>
       </div>
     </div>
-  )
-  } catch (error) {
-    console.error('Error loading blog post:', error);
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Blog Post Loading Error</h1>
-          <p className="text-gray-600 mb-6">There was an error loading this blog post. Please try again later.</p>
-          <Link
-            href="/blog"
-            className="inline-flex items-center rounded-md bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500"
-          >
-            ← Back to Blog
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  );
 }
