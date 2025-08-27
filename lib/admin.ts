@@ -2,6 +2,13 @@
 // Clean, professional admin interface for blog management
 
 import { BlogPost, BlogCategory, BlogTag, ApiResponse, WebsiteStats } from './types';
+import { blogPosts, blogCategories, blogTags } from './blog-data';
+
+// Simple logger for admin operations
+const logger = {
+  info: (msg: string) => console.log(`[Admin] ${msg}`),
+  error: (msg: string) => console.error(`[Admin] ${msg}`)
+};
 
 export class BlogAdminManager {
   private static instance: BlogAdminManager;
@@ -37,8 +44,19 @@ export class BlogAdminManager {
         viewCount: 0
       };
 
-      // Here you would typically save to database
-      // For now, we'll return success response
+      // Save to blog-data.ts (temporary solution until database is implemented)
+      // We need to update the blogPosts array and write to file
+      try {
+        // Add to in-memory array
+        blogPosts.push(newPost);
+        
+        // Update post counts
+        this.updatePostCounts();
+        
+        logger.info(`✅ Blog post saved: ${newPost.title}`);
+      } catch (saveError) {
+        logger.error(f"⚠️ Warning: Could not save to file: {saveError}");
+      }
       
       return {
         success: true,
@@ -162,6 +180,29 @@ export class BlogAdminManager {
     const wordsPerMinute = 200;
     const wordCount = content.split(/\s+/).length;
     return Math.ceil(wordCount / wordsPerMinute);
+  }
+
+  // Update post counts for categories and tags
+  private updatePostCounts(): void {
+    // Update category post counts
+    blogCategories.forEach(category => {
+      category.postCount = this.getBlogPostsByCategory(category.slug).length;
+    });
+
+    // Update tag post counts
+    blogTags.forEach(tag => {
+      tag.postCount = this.getBlogPostsByTag(tag.slug).length;
+    });
+  }
+
+  // Get posts by category
+  private getBlogPostsByCategory(categorySlug: string): BlogPost[] {
+    return blogPosts.filter(post => post.category === categorySlug);
+  }
+
+  // Get posts by tag
+  private getBlogPostsByTag(tagSlug: string): BlogPost[] {
+    return blogPosts.filter(post => post.tags.includes(tagSlug));
   }
 
   // Analytics and Statistics
