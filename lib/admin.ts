@@ -55,7 +55,7 @@ export class BlogAdminManager {
         
         logger.info(`✅ Blog post saved: ${newPost.title}`);
       } catch (saveError) {
-        logger.error(f"⚠️ Warning: Could not save to file: {saveError}");
+        logger.error(`⚠️ Warning: Could not save to file: ${String(saveError)}`);
       }
       
       return {
