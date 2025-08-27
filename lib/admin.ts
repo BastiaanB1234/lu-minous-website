@@ -55,7 +55,7 @@ export class BlogAdminManager {
     }
   }
 
-  async updateBlogPost(_id: string, _updates: Partial<BlogPost>): Promise<ApiResponse<BlogPost>> {
+  async updateBlogPost(): Promise<ApiResponse<BlogPost>> {
     try {
       // Here you would typically update in database
       // For now, we'll return success response
@@ -74,7 +74,7 @@ export class BlogAdminManager {
     }
   }
 
-  async deleteBlogPost(_id: string): Promise<ApiResponse<void>> {
+  async deleteBlogPost(): Promise<ApiResponse<void>> {
     try {
       // Here you would typically delete from database
       // For now, we'll return success response

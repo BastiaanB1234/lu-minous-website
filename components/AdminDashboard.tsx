@@ -10,9 +10,9 @@ interface AdminDashboardProps {
 
 export default function AdminDashboard({ className = '' }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<'posts' | 'categories' | 'tags' | 'analytics'>('posts');
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [categories, setCategories] = useState<BlogCategory[]>([]);
-  const [tags, setTags] = useState<BlogTag[]>([]);
+  const [posts] = useState<BlogPost[]>([]);
+  const [categories] = useState<BlogCategory[]>([]);
+  const [tags] = useState<BlogTag[]>([]);
   const [stats, setStats] = useState<WebsiteStats | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +25,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     try {
       // Load website statistics
       const statsResponse = await blogAdminManager.getWebsiteStats();
-      if (statsResponse.success) {
+      if (statsResponse.success && statsResponse.data) {
         setStats(statsResponse.data);
       }
     } catch (error) {
