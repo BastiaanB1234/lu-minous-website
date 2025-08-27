@@ -33,6 +33,19 @@ export default async function BlogPage() {
           <div className="mb-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Post</h2>
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+              {/* Featured Post Image */}
+              {featuredPost.image_url && (
+                <div className="relative h-64 md:h-80 overflow-hidden">
+                  <img
+                    src={featuredPost.image_url}
+                    alt={featuredPost.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                </div>
+              )}
+              
               <div className="p-8">
                 <div className="flex items-center space-x-4 mb-4">
                   <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
@@ -89,6 +102,19 @@ export default async function BlogPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {otherPosts.map((post) => (
               <article key={post.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
+                {/* Post Image */}
+                {post.image_url && (
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={post.image_url}
+                      alt={post.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                  </div>
+                )}
+                
                 <div className="p-6">
                   <div className="flex items-center space-x-2 mb-4">
                     {post.featured && (

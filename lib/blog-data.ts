@@ -61,6 +61,7 @@ export interface BlogPost {
   updated_at: string
   category?: string
   tags?: string[]
+  image_url?: string
 }
 
 export interface Category {

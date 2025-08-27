@@ -27,40 +27,90 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         </div>
       </div>
 
-      {/* Article Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="mx-auto max-w-4xl px-6 py-12 lg:px-8">
-          <div className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-6">
-            {post.featured ? 'Featured Post' : 'Blog Post'}
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-6">
-            {post.title}
-          </h1>
-          {post.excerpt && (
-            <p className="text-xl leading-8 text-gray-600 mb-8">
-              {post.excerpt}
-            </p>
-          )}
-          <div className="flex items-center space-x-6 text-sm text-gray-500 mb-6">
-            <div className="flex items-center space-x-2">
-              <User className="h-4 w-4" />
-              <span>{post.author}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-4 w-4" />
-                             <span>{new Date(post.published_at || post.created_at || '').toLocaleDateString('en-US', { 
-                 year: 'numeric', 
-                 month: 'long', 
-                 day: 'numeric' 
-               })}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4" />
-              <span>{Math.ceil(post.content.split(' ').length / 200)} min read</span>
+      {/* Hero Image Section */}
+      {post.image_url && (
+        <div className="relative w-full h-96 md:h-[500px] overflow-hidden">
+          <img
+            src={post.image_url}
+            alt={post.title}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+          {/* Image Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
+            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+              <div className="mx-auto max-w-4xl">
+                <div className="inline-flex items-center rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-sm font-medium text-white mb-4">
+                  {post.featured ? 'Featured Post' : 'Blog Post'}
+                </div>
+                <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-4">
+                  {post.title}
+                </h1>
+                {post.excerpt && (
+                  <p className="text-xl leading-8 text-white/90 mb-6 max-w-3xl">
+                    {post.excerpt}
+                  </p>
+                )}
+                <div className="flex items-center space-x-6 text-sm text-white/80">
+                  <div className="flex items-center space-x-2">
+                    <User className="h-4 w-4" />
+                    <span>{post.author}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="h-4 w-4" />
+                    <span>{new Date(post.published_at || post.created_at || '').toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-4 w-4" />
+                    <span>{Math.ceil(post.content.split(' ').length / 200)} min read</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Article Header (when no image) */}
+      {!post.image_url && (
+        <div className="bg-white border-b border-gray-200">
+          <div className="mx-auto max-w-4xl px-6 py-12 lg:px-8">
+            <div className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-6">
+              {post.featured ? 'Featured Post' : 'Blog Post'}
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-6">
+              {post.title}
+            </h1>
+            {post.excerpt && (
+              <p className="text-xl leading-8 text-gray-600 mb-8">
+                {post.excerpt}
+              </p>
+            )}
+            <div className="flex items-center space-x-6 text-sm text-gray-500 mb-6">
+              <div className="flex items-center space-x-2">
+                <User className="h-4 w-4" />
+                <span>{post.author}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Calendar className="h-4 w-4" />
+                <span>{new Date(post.published_at || post.created_at || '').toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Clock className="h-4 w-4" />
+                <span>{Math.ceil(post.content.split(' ').length / 200)} min read</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Article Content */}
       <div className="bg-white">
