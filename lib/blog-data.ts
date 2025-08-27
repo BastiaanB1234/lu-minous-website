@@ -63,7 +63,7 @@ export const blogPosts: BlogPost[] = [
     updatedAt: new Date().toISOString(),
     category: 'spiritual-growth',
     tags: ['spiritual', 'growth', 'welcome'],
-    imageUrl: '/images/blog/welcome-to-lu-minous.jpg',
+    imageUrl: '/images/blog/welcome-to-lu-minous.png',
     readTime: 3,
     viewCount: 0
   }

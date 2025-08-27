@@ -1,16 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Disable image optimization completely
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'lu.minous.app',
-        port: '',
-        pathname: '/images/**',
-      },
-    ],
-    unoptimized: true, // Disable Next.js image optimization for now
+    unoptimized: true,
   },
 };
 
