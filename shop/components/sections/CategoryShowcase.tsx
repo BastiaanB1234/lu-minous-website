@@ -1,119 +1,150 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { sampleCategories } from '../../lib/sample-data';
+import { Category } from '../../lib/types';
+import { getCategories } from '../../lib/database';
 
 export default function CategoryShowcase() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const allCategories = await getCategories();
+        setCategories(allCategories);
+      } catch (error) {
+        console.error('Error loading categories:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCategories();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Ontdek Onze Categorieën
+            </h2>
+            <p className="text-gray-600">
+              Laden van categorieën...
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 rounded-lg h-32 mb-4"></div>
+                <div className="h-5 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (categories.length === 0) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Ontdek Onze Categorieën
+            </h2>
+            <p className="text-gray-600 mb-8">
+              Geen categorieën gevonden.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Ontdek Onze Categorieën
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Van verse noten tot heerlijke zuidvruchten, ontdek ons complete assortiment 
-            georganiseerd in handige categorieën.
+          <p className="text-gray-600">
+            Van verse noten tot heerlijke zuidvruchten, ontdek ons complete assortiment georganiseerd in handige categorieën.
           </p>
         </motion.div>
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sampleCategories.map((category, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {categories.map((category, index) => (
             <motion.div
               key={category.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
+              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow"
             >
-              <Link
-                href={`/shop/products?category=${category.slug}`}
-                className="group block"
-              >
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group-hover:border-orange-300">
-                  {/* Category Image */}
-                  <div className="relative aspect-video bg-gradient-to-br from-orange-50 to-red-50 overflow-hidden">
-                    <div className="w-full h-full flex items-center justify-center text-4xl">
-                      {category.imageUrl ? (
-                        <img
-                          src={category.imageUrl}
-                          alt={category.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        />
-                      ) : (
-                        <span>🥜</span>
-                      )}
-                    </div>
-                    
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-
-                  {/* Category Info */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
-                      {category.name}
-                    </h3>
-                    {category.description && (
-                      <p className="text-gray-600 mb-4 line-clamp-2">
-                        {category.description}
-                      </p>
-                    )}
-                    
-                    {/* Arrow Icon */}
-                    <div className="flex items-center text-orange-600 font-medium group-hover:text-orange-700 transition-colors">
-                      <span>Bekijk producten</span>
-                      <svg 
-                        className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+              <div className="aspect-video bg-gradient-to-br from-orange-50 to-red-50 rounded-lg flex items-center justify-center mb-4">
+                {category.imageUrl ? (
+                  <img
+                    src={category.imageUrl}
+                    alt={category.name}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                ) : (
+                  <span className="text-3xl">🥜</span>
+                )}
+              </div>
+              
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {category.name}
+              </h3>
+              
+              <p className="text-gray-600 mb-4 line-clamp-2">
+                {category.description}
+              </p>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500">
+                  {category.products.length} producten
+                </span>
+                
+                <Link
+                  href={`/products?category=${category.slug}`}
+                  className="text-orange-600 hover:text-orange-700 font-medium text-sm"
+                >
+                  Bekijk producten →
+                </Link>
+              </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Call to Action */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mt-16"
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="text-center mt-12"
         >
-          <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">
-              Klaar om te beginnen?
-            </h3>
-            <p className="text-orange-100 mb-6 max-w-2xl mx-auto">
-              Ontdek ons complete assortiment van premium noten en zuidvruchten. 
-              Van verse amandelen tot heerlijke gedroogde abrikozen.
-            </p>
-            <Link
-              href="/shop/products"
-              className="inline-flex items-center px-8 py-3 bg-white text-orange-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              Bekijk Alle Producten
-              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-          </div>
+          <Link
+            href="/products"
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-600 to-red-600 text-white font-semibold rounded-lg hover:from-orange-700 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          >
+            Bekijk Alle Producten
+            <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
         </motion.div>
       </div>
     </section>

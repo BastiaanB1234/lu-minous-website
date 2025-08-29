@@ -1,15 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
 import { useCart } from '../../lib/hooks/useCart';
-import { sampleCategories } from '../../lib/sample-data';
+import { Category } from '../../lib/types';
+import { getCategories } from '../../lib/database';
 
 export default function ShopHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
   const { getCartItemCount } = useCart();
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const allCategories = await getCategories();
+        setCategories(allCategories);
+      } catch (error) {
+        console.error('Error loading categories:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCategories();
+  }, []);
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
@@ -42,15 +60,21 @@ export default function ShopHeader() {
               {/* Dropdown Menu */}
               <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="py-2">
-                  {sampleCategories.map((category) => (
-                    <Link
-                      key={category.id}
-                      href={`/shop/products?category=${category.slug}`}
-                      className="block px-4 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
-                    >
-                      {category.name}
-                    </Link>
-                  ))}
+                  {loading ? (
+                    <div className="px-4 py-2 text-gray-500">Laden...</div>
+                  ) : categories.length > 0 ? (
+                    categories.map((category) => (
+                      <Link
+                        key={category.id}
+                        href={`/shop/products?category=${category.slug}`}
+                        className="block px-4 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                      >
+                        {category.name}
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="px-4 py-2 text-gray-500">Geen categorieën gevonden</div>
+                  )}
                 </div>
               </div>
             </div>
@@ -104,52 +128,50 @@ export default function ShopHeader() {
               <input
                 type="text"
                 placeholder="Zoek naar producten..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
               <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
             </div>
           </div>
         )}
-      </div>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white">
-          <div className="px-4 py-2 space-y-1">
-            <Link
-              href="/shop"
-              className="block px-3 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-md"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Home
-            </Link>
-            {sampleCategories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/shop/products?category=${category.slug}`}
-                className="block px-3 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-md"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {category.name}
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-200">
+            <div className="py-4 space-y-2">
+              <Link href="/shop" className="block px-4 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600">
+                Home
               </Link>
-            ))}
-            <Link
-              href="/shop/about"
-              className="block px-3 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-md"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Over Ons
-            </Link>
-            <Link
-              href="/shop/blog"
-              className="block px-3 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-md"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Blog
-            </Link>
+              <div className="px-4 py-2">
+                <div className="text-gray-700 font-medium mb-2">Assortiment</div>
+                <div className="pl-4 space-y-1">
+                  {loading ? (
+                    <div className="text-gray-500">Laden...</div>
+                  ) : categories.length > 0 ? (
+                    categories.map((category) => (
+                      <Link
+                        key={category.id}
+                        href={`/shop/products?category=${category.slug}`}
+                        className="block py-1 text-gray-600 hover:text-orange-600"
+                      >
+                        {category.name}
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="text-gray-500">Geen categorieën gevonden</div>
+                  )}
+                </div>
+              </div>
+              <Link href="/shop/about" className="block px-4 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600">
+                Over Ons
+              </Link>
+              <Link href="/shop/blog" className="block px-4 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600">
+                Blog
+              </Link>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </header>
   );
 }

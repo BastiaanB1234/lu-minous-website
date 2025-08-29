@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "cd shop && npx prisma generate",
+    "db:push": "cd shop && npx prisma db push",
+    "db:seed": "cd shop && npx tsx prisma/seed.ts",
+    "db:studio": "cd shop && npx prisma studio"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.7",
@@ -33,6 +37,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "tsx": "^4.19.2"
   }
 }

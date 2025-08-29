@@ -1,4 +1,4 @@
-// This is your Prisma schema file,
+// This is your Prisma schema file for SQLite development
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./shop.db"
 }
 
 // Product Categories
@@ -31,15 +31,15 @@ model Product {
   slug        String   @unique
   description String
   shortDescription String?
-  price       Decimal  @db.Decimal(10, 2)
-  comparePrice Decimal? @db.Decimal(10, 2)
+  price       Float    @default(0)
+  comparePrice Float?
   stock       Int      @default(0)
-  weight      Decimal? @db.Decimal(8, 3) // in grams
+  weight      Float?   // in grams
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
   imageUrl    String?
-  gallery     String[] // Array of image URLs
-  tags        String[] // Array of tags
+  gallery     String   // JSON string for SQLite compatibility
+  tags        String   // JSON string for SQLite compatibility
   featured    Boolean  @default(false)
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -86,11 +86,11 @@ model Order {
   orderNumber  String      @unique
   customerId   String
   customer     Customer    @relation(fields: [customerId], references: [id])
-  status       OrderStatus @default(PENDING)
-  totalAmount  Decimal     @db.Decimal(10, 2)
-  subtotal     Decimal     @db.Decimal(10, 2)
-  taxAmount    Decimal     @db.Decimal(10, 2)
-  shippingAmount Decimal   @db.Decimal(10, 2)
+  status       String      @default("PENDING") // OrderStatus enum as string for SQLite
+  totalAmount  Float       @default(0)
+  subtotal     Float       @default(0)
+  taxAmount    Float       @default(0)
+  shippingAmount Float     @default(0)
   orderItems   OrderItem[]
   notes        String?
   createdAt    DateTime    @default(now())
@@ -107,19 +107,8 @@ model OrderItem {
   productId String
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
-  price     Decimal @db.Decimal(10, 2)
-  total     Decimal @db.Decimal(10, 2)
+  price     Float
+  total     Float
 
   @@map("order_items")
-}
-
-// Order Status Enum
-enum OrderStatus {
-  PENDING
-  CONFIRMED
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  REFUNDED
 }
