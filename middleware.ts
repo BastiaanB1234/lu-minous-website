@@ -4,13 +4,13 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { hostname, pathname } = request.nextUrl
   
-  // Voor shop.minous.app, toon webshop
+  // Voor shop.minous.app, redirect naar lu.minous.app/shop
   if (hostname === 'shop.minous.app') {
-    // Alle routes op shop.minous.app tonen webshop
-    return NextResponse.next()
+    const newUrl = new URL(`/shop${pathname}`, 'https://lu.minous.app')
+    return NextResponse.redirect(newUrl, 301)
   }
   
-  // Voor lu.minous.app, behoud originele website
+  // Voor lu.minous.app, behoud originele functionaliteit
   if (hostname === 'lu.minous.app') {
     // Behoud originele website functionaliteit
     return NextResponse.next()
