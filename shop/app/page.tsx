@@ -1,4 +1,9 @@
 import { Metadata } from 'next';
+import ShopHeader from '../components/layout/ShopHeader';
+import ShopFooter from '../components/layout/ShopFooter';
+import HeroSection from '../components/sections/HeroSection';
+import FeaturedProducts from '../components/sections/FeaturedProducts';
+import CategoryShowcase from '../components/sections/CategoryShowcase';
 
 export const metadata: Metadata = {
   title: 'Lu Minous Nuts & Dried Fruits - Premium Quality Nuts & Dried Fruits',
@@ -8,18 +13,15 @@ export const metadata: Metadata = {
 export default function ShopHomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b border-gray-200 p-4">
-        <h1 className="text-2xl font-bold text-gray-900">Lu Minous Shop</h1>
-      </header>
+      <ShopHeader />
       
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8">
-          Welkom bij onze Webshop
-        </h2>
-        <p className="text-gray-600 text-lg">
-          Hier komen de producten uit de database te staan.
-        </p>
+      <main>
+        <HeroSection />
+        <FeaturedProducts />
+        <CategoryShowcase />
       </main>
+      
+      <ShopFooter />
     </div>
   );
 }

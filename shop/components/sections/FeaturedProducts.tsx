@@ -1,18 +1,63 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Product } from '../../lib/types';
-import { getProducts } from '../../lib/database';
 
-// Server component - data wordt server-side opgehaald
-export default async function FeaturedProducts() {
-  let products: Product[] = [];
-  let error = false;
+export default function FeaturedProducts() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  try {
-    products = await getProducts({ featured: true, limit: 4 });
-  } catch (err) {
-    console.error('Error loading featured products:', err);
-    error = true;
+  useEffect(() => {
+    async function loadFeaturedProducts() {
+      try {
+        setLoading(true);
+        const response = await fetch('/shop/api/products?featured=true&limit=4');
+        const result = await response.json();
+        
+        if (result.success) {
+          setProducts(result.data);
+        } else {
+          setError(true);
+        }
+      } catch (err) {
+        console.error('Error loading featured products:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadFeaturedProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Uitgelichte Producten
+            </h2>
+            <p className="text-gray-600">
+              Laden van onze beste producten...
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 rounded-lg h-48 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded mb-2"></div>
+                <div className="h-6 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
   }
 
   if (error) {
@@ -26,6 +71,12 @@ export default async function FeaturedProducts() {
             <p className="text-gray-600 mb-8">
               Er is een fout opgetreden bij het laden van de producten.
             </p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+            >
+              Opnieuw proberen
+            </button>
           </div>
         </div>
       </section>
@@ -68,7 +119,7 @@ export default async function FeaturedProducts() {
             className="text-gray-600"
           >
             Ontdek onze meest populaire noten en zuidvruchten, zorgvuldig geselecteerd voor de beste smaak en kwaliteit.
-          </motion.p>
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

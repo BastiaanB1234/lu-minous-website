@@ -1,17 +1,39 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Category } from '../../lib/types';
-import { getCategories } from '../../lib/database';
 
-// Server component voor categorie menu
-export default async function CategoryMenu() {
-  let categories: Category[] = [];
-  let error = false;
+export default function CategoryMenu() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  try {
-    categories = await getCategories();
-  } catch (err) {
-    console.error('Error loading categories:', err);
-    error = true;
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        setLoading(true);
+        const response = await fetch('/shop/api/categories');
+        const result = await response.json();
+        
+        if (result.success) {
+          setCategories(result.data);
+        } else {
+          setError(true);
+        }
+      } catch (err) {
+        console.error('Error loading categories:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCategories();
+  }, []);
+
+  if (loading) {
+    return <div className="px-4 py-2 text-gray-500">Laden...</div>;
   }
 
   if (error || categories.length === 0) {
