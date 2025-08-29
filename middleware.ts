@@ -4,9 +4,9 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { hostname, pathname } = request.nextUrl
   
-  // Alleen shop.minous.app toont de webshop
+  // Voor shop.minous.app, toon webshop
   if (hostname === 'shop.minous.app') {
-    // Voor shop.minous.app, toon webshop
+    // Alle routes op shop.minous.app tonen webshop
     return NextResponse.next()
   }
   
@@ -16,9 +16,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
   
-  // Voor hoofddomein minous.app, toon originele website
+  // Voor hoofddomein minous.app
   if (hostname === 'minous.app') {
-    // Behoud originele website functionaliteit
+    // Als het /shop route is, toon webshop
+    if (pathname.startsWith('/shop')) {
+      return NextResponse.next()
+    }
+    // Anders behoud originele website
     return NextResponse.next()
   }
   
