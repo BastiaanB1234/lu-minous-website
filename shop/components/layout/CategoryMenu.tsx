@@ -1,9 +1,10 @@
 import Link from 'next/link';
+import { Category } from '../../lib/types';
 import { getCategories } from '../../lib/database';
 
 // Server component voor categorie menu
 export default async function CategoryMenu() {
-  let categories = [];
+  let categories: Category[] = [];
   let error = false;
 
   try {
