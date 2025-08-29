@@ -4,16 +4,21 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { hostname, pathname } = request.nextUrl
   
-  // Als het hoofddomein is en niet al op /shop route
-  if (hostname === 'minous.app' && !pathname.startsWith('/shop')) {
-    // Redirect naar webshop subdomein
-    const shopUrl = `https://shop.minous.app${pathname === '/' ? '/shop' : `/shop${pathname}`}`
-    return NextResponse.redirect(shopUrl)
+  // Alleen shop.minous.app toont de webshop
+  if (hostname === 'shop.minous.app') {
+    // Voor shop.minous.app, toon webshop
+    return NextResponse.next()
   }
   
-  // Als het subdomein is, toon webshop
-  if (hostname === 'shop.minous.app') {
-    // Laat de webshop routes door
+  // Voor lu.minous.app, behoud originele website
+  if (hostname === 'lu.minous.app') {
+    // Behoud originele website functionaliteit
+    return NextResponse.next()
+  }
+  
+  // Voor hoofddomein minous.app, toon originele website
+  if (hostname === 'minous.app') {
+    // Behoud originele website functionaliteit
     return NextResponse.next()
   }
   

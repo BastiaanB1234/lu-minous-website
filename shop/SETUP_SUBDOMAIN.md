@@ -1,16 +1,16 @@
 # 🌐 **Subdomein Setup voor Lu Minous Webshop**
 
 ## 🎯 **Doel**
-Een subdomein instellen voor je webshop (bijv. `shop.luminous.com` of `noten.luminous.com`)
+Een subdomein instellen voor je webshop (`shop.minous.app`) terwijl je hoofdsite (`lu.minous.app`) de originele spirituele website behoudt.
 
 ## 📋 **Stap 1: Kies Je Subdomein**
 
 **Opties:**
-- `shop.luminous.com` - Algemene webshop
-- `noten.luminous.com` - Specifiek voor noten
-- `webshop.luminous.com` - Duidelijke webshop naam
+- `shop.minous.app` - Algemene webshop ⭐ **Aanbevolen**
+- `noten.minous.app` - Specifiek voor noten
+- `webshop.minous.app` - Duidelijke webshop naam
 
-**Aanbeveling:** `noten.luminous.com` (kort en duidelijk)
+**Aanbeveling:** `shop.minous.app` (kort en duidelijk)
 
 ## 🔧 **Stap 2: DNS Configuratie**
 
@@ -23,16 +23,16 @@ Een subdomein instellen voor je webshop (bijv. `shop.luminous.com` of `noten.lum
 
 ```
 Type: CNAME
-Name: noten (of shop, webshop)
-Value: luminous.com
+Name: shop (of noten, webshop)
+Value: minous.app
 TTL: Auto (of 300 seconden)
 ```
 
-**Voorbeeld voor `noten.luminous.com`:**
+**Voorbeeld voor `shop.minous.app`:**
 ```
 Type: CNAME
-Name: noten
-Value: luminous.com
+Name: shop
+Value: minous.app
 TTL: Auto
 ```
 
@@ -50,7 +50,7 @@ vercel
 
 ### **2. Domein Koppelen:**
 ```bash
-vercel domains add noten.luminous.com
+vercel domains add shop.minous.app
 ```
 
 ### **3. DNS Verificatie:**
@@ -61,21 +61,30 @@ Vercel geeft je een TXT record om toe te voegen voor verificatie.
 Maak een `.env.local` bestand aan:
 
 ```env
-NEXT_PUBLIC_SHOP_SUBDOMAIN=noten.luminous.com
-NEXT_PUBLIC_MAIN_DOMAIN=luminous.com
+NEXT_PUBLIC_SHOP_SUBDOMAIN=shop.minous.app
+NEXT_PUBLIC_MAIN_DOMAIN=lu.minous.app
 ```
 
 ## ✅ **Stap 5: Testen**
 
 1. **Wacht 5-10 minuten** na DNS wijziging
-2. **Test je subdomein:** `https://noten.luminous.com`
-3. **Controleer redirects** naar `/shop`
+2. **Test je subdomein:** `https://shop.minous.app`
+3. **Controleer dat hoofdsite intact blijft:** `https://lu.minous.app`
+
+## 🔍 **Hoe Het Werkt**
+
+**Na deze setup:**
+- `lu.minous.app` → **Spirituele website** (origineel)
+- `shop.minous.app` → **Webshop** (nieuw)
+- `minous.app` → **Spirituele website** (origineel)
+
+**De webshop is alleen beschikbaar op het subdomein, niet op de hoofdsite.**
 
 ## 🔍 **Troubleshooting**
 
 ### **DNS Propagatie:**
 - DNS wijzigingen kunnen 24-48 uur duren
-- Gebruik `nslookup noten.luminous.com` om te controleren
+- Gebruik `nslookup shop.minous.app` om te controleren
 
 ### **Vercel Issues:**
 - Controleer of je domein is geverifieerd
@@ -94,4 +103,7 @@ Als je problemen ondervindt:
 
 ## 🎉 **Succes!**
 
-Na deze setup heb je een professionele webshop op je eigen subdomein!
+Na deze setup heb je:
+- **Spirituele website** op `lu.minous.app` ✅
+- **Webshop** op `shop.minous.app` ✅
+- **Gescheiden functionaliteiten** zonder conflicten ✅
