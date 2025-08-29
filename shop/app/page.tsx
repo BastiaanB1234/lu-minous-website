@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
-import ShopHeader from '../../components/layout/ShopHeader';
-import ShopFooter from '../../components/layout/ShopFooter';
-import HeroSection from '../../components/sections/HeroSection';
-import FeaturedProducts from '../../components/sections/FeaturedProducts';
-import CategoryShowcase from '../../components/sections/CategoryShowcase';
+import ShopHeader from '../components/layout/ShopHeader';
+import ShopFooter from '../components/layout/ShopFooter';
+import HeroSection from '../components/sections/HeroSection';
+import FeaturedProducts from '../components/sections/FeaturedProducts';
+import CategoryShowcase from '../components/sections/CategoryShowcase';
 
 export const metadata: Metadata = {
   title: 'Lu Minous Nuts & Dried Fruits - Premium Quality Nuts & Dried Fruits',
