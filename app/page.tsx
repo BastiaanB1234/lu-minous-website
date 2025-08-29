@@ -1,13 +1,6 @@
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
-import Hero from '@/components/sections/Hero'
+import { redirect } from 'next/navigation'
 
 export default function Home() {
-  return (
-    <main className="min-h-screen">
-      <Header />
-      <Hero />
-      <Footer />
-    </main>
-  )
+  // Redirect naar webshop op subdomein
+  redirect('https://shop.minous.app/shop')
 }
