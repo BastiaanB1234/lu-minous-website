@@ -119,7 +119,7 @@ export default function FeaturedProducts() {
             className="text-gray-600"
           >
             Ontdek onze meest populaire noten en zuidvruchten, zorgvuldig geselecteerd voor de beste smaak en kwaliteit.
-          </p>
+          </motion.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
