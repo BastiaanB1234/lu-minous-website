@@ -19,18 +19,6 @@
       "destination": "/$1"
     }
   ],
-  "redirects": [
-    {
-      "source": "https://shop.minous.app",
-      "destination": "https://lu.minous.app/shop",
-      "permanent": true
-    },
-    {
-      "source": "https://shop.minous.app/(.*)",
-      "destination": "https://lu.minous.app/shop/$1",
-      "permanent": true
-    }
-  ],
   "headers": [
     {
       "source": "/shop/(.*)",
