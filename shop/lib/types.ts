@@ -4,14 +4,14 @@ export interface Product {
   name: string;
   slug: string;
   description: string;
-  shortDescription?: string;
+  shortDescription: string | null;
   price: number;
-  comparePrice?: number;
+  comparePrice: number | null;
   stock: number;
-  weight?: number; // in grams
+  weight: number | null; // in grams
   categoryId: string;
   category: Category;
-  imageUrl?: string;
+  imageUrl: string | null;
   gallery: string[];
   tags: string[];
   featured: boolean;
@@ -24,8 +24,8 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
-  description?: string;
-  imageUrl?: string;
+  description: string | null;
+  imageUrl: string | null;
   products: Product[];
   createdAt: Date;
   updatedAt: Date;
@@ -36,8 +36,8 @@ export interface Customer {
   email: string;
   firstName: string;
   lastName: string;
-  phone?: string;
-  address?: Address;
+  phone: string | null;
+  address: Address | null;
   orders: Order[];
   createdAt: Date;
   updatedAt: Date;
@@ -49,7 +49,7 @@ export interface Address {
   customer: Customer;
   street: string;
   city: string;
-  state?: string;
+  state: string | null;
   postalCode: string;
   country: string;
   createdAt: Date;
@@ -67,7 +67,7 @@ export interface Order {
   taxAmount: number;
   shippingAmount: number;
   orderItems: OrderItem[];
-  notes?: string;
+  notes: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
