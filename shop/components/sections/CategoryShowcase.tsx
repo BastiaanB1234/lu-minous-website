@@ -1,50 +1,31 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Category } from '../../lib/types';
 import { getCategories } from '../../lib/database';
 
-export default function CategoryShowcase() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+// Server component - data wordt server-side opgehaald
+export default async function CategoryShowcase() {
+  let categories: Category[] = [];
+  let error = false;
 
-  useEffect(() => {
-    async function loadCategories() {
-      try {
-        const allCategories = await getCategories();
-        setCategories(allCategories);
-      } catch (error) {
-        console.error('Error loading categories:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
+  try {
+    categories = await getCategories();
+  } catch (err) {
+    console.error('Error loading categories:', err);
+    error = true;
+  }
 
-    loadCategories();
-  }, []);
-
-  if (loading) {
+  if (error) {
     return (
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Ontdek Onze Categorieën
             </h2>
-            <p className="text-gray-600">
-              Laden van categorieën...
+            <p className="text-gray-600 mb-8">
+              Er is een fout opgetreden bij het laden van de categorieën.
             </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 rounded-lg h-32 mb-4"></div>
-                <div className="h-5 bg-gray-200 rounded mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-              </div>
-            ))}
           </div>
         </div>
       </section>

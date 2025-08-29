@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 
+// Server-side only Prisma client
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
@@ -8,7 +9,7 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
-// Database utility functions
+// Database utility functions (server-side only)
 export async function getCategories() {
   try {
     return await prisma.category.findMany({

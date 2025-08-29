@@ -1,33 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
 import { useCart } from '../../lib/hooks/useCart';
-import { Category } from '../../lib/types';
-import { getCategories } from '../../lib/database';
+import CategoryMenu from './CategoryMenu';
 
 export default function ShopHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
   const { getCartItemCount } = useCart();
-
-  useEffect(() => {
-    async function loadCategories() {
-      try {
-        const allCategories = await getCategories();
-        setCategories(allCategories);
-      } catch (error) {
-        console.error('Error loading categories:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadCategories();
-  }, []);
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
@@ -60,21 +42,7 @@ export default function ShopHeader() {
               {/* Dropdown Menu */}
               <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="py-2">
-                  {loading ? (
-                    <div className="px-4 py-2 text-gray-500">Laden...</div>
-                  ) : categories.length > 0 ? (
-                    categories.map((category) => (
-                      <Link
-                        key={category.id}
-                        href={`/shop/products?category=${category.slug}`}
-                        className="block px-4 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
-                      >
-                        {category.name}
-                      </Link>
-                    ))
-                  ) : (
-                    <div className="px-4 py-2 text-gray-500">Geen categorieën gevonden</div>
-                  )}
+                  <CategoryMenu />
                 </div>
               </div>
             </div>
@@ -145,21 +113,7 @@ export default function ShopHeader() {
               <div className="px-4 py-2">
                 <div className="text-gray-700 font-medium mb-2">Assortiment</div>
                 <div className="pl-4 space-y-1">
-                  {loading ? (
-                    <div className="text-gray-500">Laden...</div>
-                  ) : categories.length > 0 ? (
-                    categories.map((category) => (
-                      <Link
-                        key={category.id}
-                        href={`/shop/products?category=${category.slug}`}
-                        className="block py-1 text-gray-600 hover:text-orange-600"
-                      >
-                        {category.name}
-                      </Link>
-                    ))
-                  ) : (
-                    <div className="text-gray-500">Geen categorieën gevonden</div>
-                  )}
+                  <CategoryMenu />
                 </div>
               </div>
               <Link href="/shop/about" className="block px-4 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600">
