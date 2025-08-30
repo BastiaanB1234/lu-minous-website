@@ -12,16 +12,27 @@ export const metadata: Metadata = {
 
 export default async function BlogPage() {
   try {
-    // Haal posts en categories parallel op
-    const [posts, categoriesResponse] = await Promise.all([
-      getBlogPosts(),
-      fetch('/api/blog/categories', { cache: 'no-store' })
-    ]);
-
+    console.log('Starting to load blog page...');
+    
+    // Haal posts op
+    const posts = await getBlogPosts();
+    console.log('Posts loaded:', posts.length);
+    
+    // Haal categories op
     let categories: Category[] = [];
-    if (categoriesResponse.ok) {
-      const categoriesData = await categoriesResponse.json();
-      categories = categoriesData.data || [];
+    try {
+      const categoriesResponse = await fetch('/api/blog/categories', { cache: 'no-store' });
+      console.log('Categories response status:', categoriesResponse.status);
+      
+      if (categoriesResponse.ok) {
+        const categoriesData = await categoriesResponse.json();
+        categories = categoriesData.data || [];
+        console.log('Categories loaded:', categories.length);
+      } else {
+        console.error('Categories API failed:', categoriesResponse.statusText);
+      }
+    } catch (categoriesError) {
+      console.error('Error fetching categories:', categoriesError);
     }
 
     return (
@@ -39,25 +50,25 @@ export default async function BlogPage() {
 
           {/* Blog Posts Grid */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">All Posts</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.map((post) => (
-                <PostCard key={post.id} post={post} categories={categories} />
-              ))}
-            </div>
-          </div>
-
-          {posts.length === 0 && (
-            <div className="text-center py-16">
-              <div className="text-gray-400 mb-4">
-                <svg className="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">All Posts ({posts.length})</h2>
+            {posts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {posts.map((post) => (
+                  <PostCard key={post.id} post={post} categories={categories} />
+                ))}
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No posts yet</h3>
-              <p className="text-gray-500">Check back soon for spiritual wisdom and insights.</p>
-            </div>
-          )}
+            ) : (
+              <div className="text-center py-16">
+                <div className="text-gray-400 mb-4">
+                  <svg className="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No posts yet</h3>
+                <p className="text-gray-500">Check back soon for spiritual wisdom and insights.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -67,7 +78,16 @@ export default async function BlogPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Error Loading Blog</h1>
-          <p className="text-gray-600">Please try again later.</p>
+          <p className="text-gray-600 mb-4">Er is een fout opgetreden bij het laden van de blog.</p>
+          <pre className="text-sm text-red-600 bg-red-50 p-4 rounded overflow-auto max-w-md">
+            {error instanceof Error ? error.message : 'Unknown error'}
+          </pre>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Probeer opnieuw
+          </button>
         </div>
       </div>
     );
