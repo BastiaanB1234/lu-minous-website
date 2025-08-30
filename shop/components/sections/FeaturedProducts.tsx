@@ -13,18 +13,12 @@ export default function FeaturedProducts() {
     async function loadFeaturedProducts() {
       try {
         setLoading(true);
-        // Use static JSON files with bypass token
-        const response = await fetch('/api/products.json', {
-          headers: {
-            'x-vercel-protection-bypass': 'LhaKcRSGcRe5cU6WxBVrqiIleQJkYeSR'
-          }
-        });
+        // Use the real API route that connects to the database
+        const response = await fetch('/shop/api/products?featured=true&limit=4');
         const result = await response.json();
         
         if (result.success) {
-          // Filter featured products
-          const featuredProducts = result.data.filter((product: Product) => product.featured).slice(0, 4);
-          setProducts(featuredProducts);
+          setProducts(result.data);
         } else {
           setError(true);
         }

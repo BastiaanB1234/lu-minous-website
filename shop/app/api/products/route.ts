@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getProducts } from '../../../lib/database';
+import { getProducts } from '../../lib/database';
 
-// Force dynamic rendering to avoid deployment protection issues
+// Force dynamic rendering
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
