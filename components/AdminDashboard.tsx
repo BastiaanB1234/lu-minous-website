@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { BlogPost, Category, Tag, WebsiteStats } from '../lib/types';
 import { AdminService } from '../lib/admin';
+import { getBlogPosts } from '../lib/blog-database';
 
 interface AdminDashboardProps {
   className?: string;
@@ -26,6 +27,42 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       if (statsResponse.success && statsResponse.data) {
         setStats(statsResponse.data);
       }
+
+      // Load blog posts
+      const blogPosts = await getBlogPosts();
+      setPosts(blogPosts);
+
+      // Load categories and tags from posts
+      const uniqueCategories = new Map<string, Category>();
+      const uniqueTags = new Map<string, Tag>();
+
+      blogPosts.forEach(post => {
+        if (post.categories) {
+          uniqueCategories.set(post.categories.slug, {
+            id: post.categories.slug,
+            name: post.categories.name,
+            slug: post.categories.slug,
+            description: post.categories.description || '',
+            created_at: post.created_at,
+            updated_at: post.updated_at
+          });
+        }
+
+        if (post.tags && Array.isArray(post.tags)) {
+          post.tags.forEach((tagName: string) => {
+            uniqueTags.set(tagName, {
+              id: tagName,
+              name: tagName,
+              slug: tagName.toLowerCase().replace(/\s+/g, '-'),
+              created_at: post.created_at
+            });
+          });
+        }
+      });
+
+      setCategories(Array.from(uniqueCategories.values()));
+      setTags(Array.from(uniqueTags.values()));
+
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -40,7 +77,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   const renderPostsTab = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Blog Posts</h3>
+        <h3 className="text-lg font-semibold">Blog Posts ({posts.length})</h3>
         <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
           + New Post
         </button>
@@ -60,7 +97,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                 Category
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Views
+                Created
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -71,7 +108,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
             {posts.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                  No posts yet. Create your first blog post!
+                  {loading ? 'Loading posts...' : 'No posts yet. Create your first blog post!'}
                 </td>
               </tr>
             ) : (
@@ -93,8 +130,8 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {post.categories?.name || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    N/A
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(post.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
@@ -112,7 +149,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   const renderCategoriesTab = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Categories</h3>
+        <h3 className="text-lg font-semibold">Categories ({categories.length})</h3>
         <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
           + New Category
         </button>
@@ -121,7 +158,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.length === 0 ? (
           <div className="col-span-full text-center py-8 text-gray-500">
-            No categories yet. Create your first category!
+            {loading ? 'Loading categories...' : 'No categories yet. Create your first category!'}
           </div>
         ) : (
           categories.map((category) => (
@@ -129,7 +166,9 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
               <h4 className="text-lg font-semibold text-gray-900">{category.name}</h4>
               <p className="text-gray-600 mt-2">{category.description}</p>
               <div className="mt-4 flex justify-between items-center">
-                <span className="text-sm text-gray-500">0 posts</span>
+                <span className="text-sm text-gray-500">
+                  {posts.filter(post => post.categories?.slug === category.slug).length} posts
+                </span>
                 <div className="space-x-2">
                   <button className="text-indigo-600 hover:text-indigo-900 text-sm">Edit</button>
                   <button className="text-red-600 hover:text-red-900 text-sm">Delete</button>
@@ -145,7 +184,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   const renderTagsTab = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Tags</h3>
+        <h3 className="text-lg font-semibold">Tags ({tags.length})</h3>
         <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
           + New Tag
         </button>
@@ -154,14 +193,16 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tags.length === 0 ? (
           <div className="col-span-full text-center py-8 text-gray-500">
-            No tags yet. Create your first tag!
+            {loading ? 'Loading tags...' : 'No tags yet. Create your first tag!'}
           </div>
         ) : (
           tags.map((tag) => (
             <div key={tag.id} className="bg-white rounded-lg shadow p-6">
               <h4 className="text-lg font-semibold text-gray-900">{tag.name}</h4>
               <div className="mt-4 flex justify-between items-center">
-                <span className="text-sm text-gray-500">0 posts</span>
+                <span className="text-sm text-gray-500">
+                  {posts.filter(post => post.tags && post.tags.includes(tag.name)).length} posts
+                </span>
                 <div className="space-x-2">
                   <button className="text-indigo-600 hover:text-indigo-900 text-sm">Edit</button>
                   <button className="text-red-600 hover:text-red-900 text-sm">Delete</button>
