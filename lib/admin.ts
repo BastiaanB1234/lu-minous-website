@@ -318,12 +318,28 @@ export class AdminService {
   // Analytics
   async getWebsiteStats(): Promise<ApiResponse<WebsiteStats>> {
     try {
-      // Get post count
+      // Get total post count
       const { count: postCount, error: postError } = await supabase
         .from('blog_posts')
         .select('*', { count: 'exact', head: true });
 
       if (postError) throw postError;
+
+      // Get published post count
+      const { count: publishedCount, error: publishedError } = await supabase
+        .from('blog_posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'published');
+
+      if (publishedError) throw publishedError;
+
+      // Get draft post count
+      const { count: draftCount, error: draftError } = await supabase
+        .from('blog_posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'draft');
+
+      if (draftError) throw draftError;
 
       // Get category count
       const { count: categoryCount, error: categoryError } = await supabase
@@ -341,6 +357,8 @@ export class AdminService {
 
       const stats: WebsiteStats = {
         totalPosts: postCount || 0,
+        publishedPosts: publishedCount || 0,
+        draftPosts: draftCount || 0,
         totalViews: 0, // Not implemented yet
         totalCategories: categoryCount || 0,
         totalTags: tagCount || 0,
