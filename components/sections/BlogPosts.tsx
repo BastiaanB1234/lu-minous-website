@@ -91,9 +91,9 @@ export default function BlogPosts() {
                 
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-3">
-                    {post.categories && (
+                    {post.categories && post.categories.length > 0 && (
                       <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
-                        {post.categories.name}
+                        {post.categories[0].name}
                       </span>
                     )}
                   </div>
