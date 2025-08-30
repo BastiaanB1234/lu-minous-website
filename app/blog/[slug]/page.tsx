@@ -1,38 +1,34 @@
-import Image from 'next/image';
-import { Calendar, Clock, User, ArrowLeft, Share2, Heart, MessageCircle } from 'lucide-react';
-import { getBlogPostBySlug } from '@/lib/blog-database';
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowLeft, User, Calendar, Clock, Heart, MessageCircle, Share2, Tag, FolderOpen } from 'lucide-react';
+import { getBlogPostBySlug } from '@/lib/blog-database';
 
 interface BlogPostPageProps {
-  params: { slug: string };
+  params: {
+    slug: string;
+  };
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  try {
-    const post = await getBlogPostBySlug(params.slug);
-    
-    if (!post) {
-      return {
-        title: 'Post Not Found - Lu Minous',
-      };
-    }
-
+  const post = await getBlogPostBySlug(params.slug);
+  
+  if (!post) {
     return {
-      title: `${post.title} - Lu Minous`,
-      description: post.excerpt || '',
-      openGraph: {
-        title: post.title,
-        description: post.excerpt || '',
-        images: post.featured_image ? [post.featured_image] : [],
-      },
-    };
-  } catch {
-    return {
-      title: 'Post Not Found - Lu Minous',
+      title: 'Post Not Found',
     };
   }
+
+  return {
+    title: post.title,
+    description: post.excerpt || post.content.substring(0, 160),
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || post.content.substring(0, 160),
+      images: post.featured_image ? [post.featured_image] : [],
+    },
+  };
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -43,19 +39,21 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       notFound();
     }
 
+    // Calculate read time (average reading speed: 200 words per minute)
+    const readTime = Math.ceil((post.content?.length || 0) / 200);
+
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Back Button */}
           <Link
             href="/blog"
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8"
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8 transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Blog
           </Link>
 
-          {/* Article Header */}
           <article className="bg-white rounded-lg shadow-lg overflow-hidden">
             {/* Featured Image */}
             {post.featured_image && (
@@ -71,23 +69,25 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             )}
 
             <div className="p-8">
-              {/* Meta Information */}
+              {/* Post Meta Information */}
               <div className="flex items-center space-x-6 text-sm text-gray-500 mb-6">
                 <div className="flex items-center">
                   <User className="h-4 w-4 mr-2" />
-                  {post.authors && post.authors.length > 0 ? post.authors[0].name : 'Lu Minous'}
+                  <span>Lu Minous</span>
                 </div>
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-2" />
-                  {new Date(post.published_at || post.created_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+                  <span>
+                    {new Date(post.published_at || post.created_at).toLocaleDateString('nl-NL', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <Clock className="h-4 w-4 mr-2" />
-                  {Math.ceil((post.content?.length || 0) / 200)} min read
+                  <span>{readTime} min read</span>
                 </div>
               </div>
 
@@ -103,26 +103,40 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 </p>
               )}
 
-              {/* Tags */}
-              {post.tags && post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {post.tags.map((tag: string) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
-                    >
-                      {tag}
+              {/* Categories and Tags */}
+              <div className="mb-8 space-y-3">
+                {/* Category */}
+                {post.category_id && (
+                  <div className="flex items-center">
+                    <FolderOpen className="h-4 w-4 mr-2 text-orange-500" />
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
+                      Category: {post.category_id}
                     </span>
-                  ))}
-                </div>
-              )}
+                  </div>
+                )}
+
+                {/* Tags */}
+                {post.tags && post.tags.length > 0 && (
+                  <div className="flex items-center flex-wrap gap-2">
+                    <Tag className="h-4 w-4 text-blue-500" />
+                    {post.tags.map((tag: string) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               {/* Content */}
               <div className="prose prose-lg max-w-none">
                 <div dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br>') }} />
               </div>
 
-              {/* Action Buttons */}
+              {/* Social Actions */}
               <div className="flex items-center justify-between mt-12 pt-8 border-t border-gray-200">
                 <div className="flex items-center space-x-4">
                   <button className="flex items-center text-gray-500 hover:text-red-500 transition-colors">

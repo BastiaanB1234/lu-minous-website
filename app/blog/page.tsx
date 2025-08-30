@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, User, ArrowRight } from 'lucide-react';
+import { Calendar, User, ArrowRight, Clock, Tag, FolderOpen } from 'lucide-react';
 import { getBlogPosts } from '@/lib/blog-database';
 import { BlogPost } from '@/lib/types';
 
@@ -17,6 +17,7 @@ export default async function BlogPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Hero Section */}
           <div className="text-center mb-16">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               Lu Minous Blog
@@ -26,7 +27,7 @@ export default async function BlogPage() {
             </p>
           </div>
 
-          {/* All Posts Grid */}
+          {/* Blog Posts Grid */}
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-8">All Posts</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -36,7 +37,6 @@ export default async function BlogPage() {
             </div>
           </div>
 
-          {/* Empty State */}
           {posts.length === 0 && (
             <div className="text-center py-16">
               <div className="text-gray-400 mb-4">
@@ -65,8 +65,12 @@ export default async function BlogPage() {
 }
 
 function PostCard({ post }: { post: BlogPost }) {
+  // Calculate read time (average reading speed: 200 words per minute)
+  const readTime = Math.ceil((post.content?.length || 0) / 200);
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+      {/* Featured Image */}
       {post.featured_image && (
         <div className="relative h-48">
           <Image
@@ -77,19 +81,68 @@ function PostCard({ post }: { post: BlogPost }) {
           />
         </div>
       )}
+
       <div className="p-6">
-        <div className="flex items-center text-sm text-gray-500 mb-3">
-          <User className="h-4 w-4 mr-1" />
-          Lu Minous
-          <span className="mx-2">•</span>
-          <Calendar className="h-4 w-4 mr-1" />
-          {new Date(post.published_at || post.created_at).toLocaleDateString()}
+        {/* Meta Information */}
+        <div className="flex items-center text-sm text-gray-500 mb-3 space-x-4">
+          <div className="flex items-center">
+            <User className="h-4 w-4 mr-1" />
+            <span>Lu Minous</span>
+          </div>
+          <div className="flex items-center">
+            <Calendar className="h-4 w-4 mr-1" />
+            <span>{new Date(post.created_at).toLocaleDateString('nl-NL')}</span>
+          </div>
+          <div className="flex items-center">
+            <Clock className="h-4 w-4 mr-1" />
+            <span>{readTime} min read</span>
+          </div>
         </div>
-        <h3 className="text-lg font-bold text-gray-900 mb-3">{post.title}</h3>
-        <p className="text-gray-600 mb-4">{post.excerpt}</p>
+
+        {/* Title */}
+        <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2">
+          {post.title}
+        </h3>
+
+        {/* Excerpt */}
+        {post.excerpt && (
+          <p className="text-gray-600 mb-4 line-clamp-3">
+            {post.excerpt}
+          </p>
+        )}
+
+        {/* Categories and Tags */}
+        <div className="mb-4 space-y-2">
+          {/* Category */}
+          {post.category_id && (
+            <div className="flex items-center">
+              <FolderOpen className="h-3 w-3 mr-1 text-orange-500" />
+              <span className="text-xs text-orange-600 font-medium">
+                Category: {post.category_id}
+              </span>
+            </div>
+          )}
+          
+          {/* Tags */}
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex items-center flex-wrap gap-1">
+              <Tag className="h-3 w-3 text-blue-500" />
+              {post.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Read More Link */}
         <Link
           href={`/blog/${post.slug}`}
-          className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+          className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
         >
           Read More
           <ArrowRight className="h-4 w-4 ml-1" />
