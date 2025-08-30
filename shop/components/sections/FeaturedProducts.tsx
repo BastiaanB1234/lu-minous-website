@@ -13,8 +13,8 @@ export default function FeaturedProducts() {
     async function loadFeaturedProducts() {
       try {
         setLoading(true);
-        // Use the real API route that connects to the database
-        const response = await fetch('/shop/api/products?featured=true&limit=4');
+        // Use the root API route that connects to the database
+        const response = await fetch('/api/products?featured=true&limit=4');
         const result = await response.json();
         
         if (result.success) {

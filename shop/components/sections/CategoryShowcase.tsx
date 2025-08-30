@@ -13,8 +13,8 @@ export default function CategoryShowcase() {
     async function loadCategories() {
       try {
         setLoading(true);
-        // Use the real API route that connects to the database
-        const response = await fetch('/shop/api/categories');
+        // Use the root API route that connects to the database
+        const response = await fetch('/api/categories');
         const result = await response.json();
         
         if (result.success) {
