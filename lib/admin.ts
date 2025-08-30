@@ -2,7 +2,7 @@
 // Clean, professional admin interface for blog management
 
 import { supabase } from './supabase';
-import { BlogPost, BlogCategory, BlogTag, WebsiteStats } from './types';
+import { BlogPost, Category, Tag, WebsiteStats } from './types';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -135,9 +135,9 @@ export class AdminService {
   }
 
   // Category Management
-  async createCategory(categoryData: Partial<BlogCategory>): Promise<ApiResponse<BlogCategory>> {
+  async createCategory(categoryData: Partial<Category>): Promise<ApiResponse<Category>> {
     try {
-      const newCategory: Partial<BlogCategory> = {
+      const newCategory: Partial<Category> = {
         name: categoryData.name || '',
         slug: this.generateSlug(categoryData.name || ''),
         description: categoryData.description || '',
@@ -157,7 +157,7 @@ export class AdminService {
 
       return {
         success: true,
-        data: data as BlogCategory,
+        data: data as Category,
         message: 'Category created successfully',
         timestamp: new Date().toISOString()
       };
@@ -170,7 +170,7 @@ export class AdminService {
     }
   }
 
-  async updateCategory(categoryId: string, categoryData: Partial<BlogCategory>): Promise<ApiResponse<BlogCategory>> {
+  async updateCategory(categoryId: string, categoryData: Partial<Category>): Promise<ApiResponse<Category>> {
     try {
       const updateData = {
         ...categoryData,
@@ -190,7 +190,7 @@ export class AdminService {
 
       return {
         success: true,
-        data: data as BlogCategory,
+        data: data as Category,
         message: 'Category updated successfully',
         timestamp: new Date().toISOString()
       };
@@ -229,9 +229,9 @@ export class AdminService {
   }
 
   // Tag Management
-  async createTag(tagData: Partial<BlogTag>): Promise<ApiResponse<BlogTag>> {
+  async createTag(tagData: Partial<Tag>): Promise<ApiResponse<Tag>> {
     try {
-      const newTag: Partial<BlogTag> = {
+      const newTag: Partial<Tag> = {
         name: tagData.name || '',
         slug: this.generateSlug(tagData.name || ''),
         created_at: new Date().toISOString()
@@ -249,7 +249,7 @@ export class AdminService {
 
       return {
         success: true,
-        data: data as BlogTag,
+        data: data as Tag,
         message: 'Tag created successfully',
         timestamp: new Date().toISOString()
       };
@@ -262,7 +262,7 @@ export class AdminService {
     }
   }
 
-  async updateTag(tagId: string, tagData: Partial<BlogTag>): Promise<ApiResponse<BlogTag>> {
+  async updateTag(tagId: string, tagData: Partial<Tag>): Promise<ApiResponse<Tag>> {
     try {
       const { data, error } = await supabase
         .from('tags')
@@ -277,7 +277,7 @@ export class AdminService {
 
       return {
         success: true,
-        data: data as BlogTag,
+        data: data as Tag,
         message: 'Tag updated successfully',
         timestamp: new Date().toISOString()
       };
@@ -343,7 +343,8 @@ export class AdminService {
         totalPosts: postCount || 0,
         totalViews: 0, // Not implemented yet
         totalCategories: categoryCount || 0,
-        totalTags: tagCount || 0
+        totalTags: tagCount || 0,
+        lastUpdated: new Date().toISOString()
       };
 
       return {

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { BlogPost, BlogCategory, BlogTag, WebsiteStats } from '../lib/types';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { BlogPost, Category, Tag, WebsiteStats } from '../lib/types';
 import { AdminService } from '../lib/admin';
 
 interface AdminDashboardProps {
@@ -11,12 +11,12 @@ interface AdminDashboardProps {
 export default function AdminDashboard({ className = '' }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<'posts' | 'categories' | 'tags' | 'analytics'>('posts');
   const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [categories, setCategories] = useState<BlogCategory[]>([]);
-  const [tags, setTags] = useState<BlogTag[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [stats, setStats] = useState<WebsiteStats | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const adminService = new AdminService();
+  const adminService = useMemo(() => new AdminService(), []);
 
   const loadData = useCallback(async () => {
     setLoading(true);
