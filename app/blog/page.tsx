@@ -6,8 +6,8 @@ import { getBlogPosts } from '@/lib/blog-database';
 import { BlogPost } from '@/lib/types';
 
 export const metadata: Metadata = {
-  title: 'Blog - Lu Minous',
-  description: 'Discover spiritual wisdom, personal growth insights, and transformative teachings from Lu Minous.',
+  title: 'Lu Minous Blog',
+  description: 'Discover spiritual wisdom, personal growth insights, and mindful reflections that inspire transformation and inner peace.',
 };
 
 export default async function BlogPage() {
@@ -17,36 +17,24 @@ export default async function BlogPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Our Blog
+              Lu Minous Blog
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover spiritual wisdom, personal growth insights, and transformative teachings
-              that will guide you on your journey to inner peace and enlightenment.
+              Discover spiritual wisdom, personal growth insights, and mindful reflections that inspire transformation and inner peace.
             </p>
           </div>
 
-          {/* Featured Post */}
-          {posts.length > 0 && (
-            <div className="mb-16">
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Post</h2>
-              <FeaturedPostCard post={posts[0]} />
-            </div>
-          )}
-
           {/* All Posts Grid */}
-          {posts.length > 1 && (
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">All Posts</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {posts.slice(1).map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))}
-              </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">All Posts</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {posts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
             </div>
-          )}
+          </div>
 
           {/* Empty State */}
           {posts.length === 0 && (
@@ -74,41 +62,6 @@ export default async function BlogPage() {
       </div>
     );
   }
-}
-
-function FeaturedPostCard({ post }: { post: BlogPost }) {
-  return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-      {post.featured_image && (
-        <div className="relative h-64">
-          <Image
-            src={post.featured_image}
-            alt={post.title}
-            fill
-            className="object-cover"
-          />
-        </div>
-      )}
-      <div className="p-6">
-        <div className="flex items-center text-sm text-gray-500 mb-3">
-          <User className="h-4 w-4 mr-1" />
-          {post.authors?.name || 'Lu Minous'}
-          <span className="mx-2">•</span>
-          <Calendar className="h-4 w-4 mr-1" />
-          {new Date(post.published_at || post.created_at).toLocaleDateString()}
-        </div>
-        <h3 className="text-xl font-bold text-gray-900 mb-3">{post.title}</h3>
-        <p className="text-gray-600 mb-4">{post.excerpt}</p>
-        <Link
-          href={`/blog/${post.slug}`}
-          className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-        >
-          Read More
-          <ArrowRight className="h-4 w-4 ml-1" />
-        </Link>
-      </div>
-    </div>
-  );
 }
 
 function PostCard({ post }: { post: BlogPost }) {
