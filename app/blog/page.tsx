@@ -5,6 +5,10 @@ import { Calendar, User, ArrowRight, Clock, Tag, FolderOpen } from 'lucide-react
 import { getBlogPosts, getCategories } from '@/lib/blog-database';
 import { BlogPost, Category } from '@/lib/types';
 
+// Force dynamic rendering - no caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'Lu Minous Blog',
   description: 'Discover spiritual wisdom, personal growth insights, and mindful reflections that inspire transformation and inner peace.',
@@ -16,11 +20,11 @@ export default async function BlogPage() {
     
     // Haal posts en categories parallel op uit de database
     const [posts, categories] = await Promise.all([
-      getBlogPosts(),
+      getBlogPosts('published'), // Alleen published posts
       getCategories()
     ]);
     
-    console.log('Posts loaded:', posts.length);
+    console.log('Published posts loaded:', posts.length);
     console.log('Categories loaded:', categories.length);
 
     return (

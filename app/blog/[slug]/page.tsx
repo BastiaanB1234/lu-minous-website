@@ -6,6 +6,10 @@ import { ArrowLeft, User, Calendar, Clock, Heart, MessageCircle, Share2, Tag, Fo
 import { getBlogPostBySlug, getCategories } from '@/lib/blog-database';
 import { BlogPost, Category } from '@/lib/types';
 
+// Force dynamic rendering - no caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface BlogPostPageProps {
   params: {
     slug: string;
@@ -151,7 +155,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     <Heart className="h-5 w-5 mr-2" />
                     Like
                   </button>
-                  <button className="flex items-center text-gray-500 hover:text-blue-500 transition-colors">
+                  <button className="flex items-center text-blue-500 transition-colors">
                     <MessageCircle className="h-5 w-5 mr-2" />
                     Comment
                   </button>
