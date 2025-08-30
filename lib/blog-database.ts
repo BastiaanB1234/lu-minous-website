@@ -4,33 +4,7 @@ export async function getBlogPosts(status: 'draft' | 'published' = 'published') 
   try {
     const { data, error } = await supabase
       .from('blog_posts')
-      .select(`
-        id,
-        title,
-        slug,
-        content,
-        excerpt,
-        featured_image,
-        published_at,
-        created_at,
-        updated_at,
-        status,
-        author_id,
-        category_id,
-        tags,
-        categories (
-          id,
-          name,
-          slug,
-          description
-        ),
-        authors (
-          id,
-          name,
-          email,
-          bio
-        )
-      `)
+      .select('*')
       .eq('status', status)
       .order('created_at', { ascending: false });
 
@@ -39,6 +13,7 @@ export async function getBlogPosts(status: 'draft' | 'published' = 'published') 
       return [];
     }
 
+    console.log('Fetched posts:', data?.length || 0);
     return data || [];
   } catch (error) {
     console.error('Error in getBlogPosts:', error);
@@ -50,33 +25,7 @@ export async function getBlogPostBySlug(slug: string) {
   try {
     const { data, error } = await supabase
       .from('blog_posts')
-      .select(`
-        id,
-        title,
-        slug,
-        content,
-        excerpt,
-        featured_image,
-        published_at,
-        created_at,
-        updated_at,
-        status,
-        author_id,
-        category_id,
-        tags,
-        categories (
-          id,
-          name,
-          slug,
-          description
-        ),
-        authors (
-          id,
-          name,
-          email,
-          bio
-        )
-      `)
+      .select('*')
       .eq('slug', slug)
       .eq('status', 'published')
       .single();
@@ -97,35 +46,9 @@ export async function getBlogPostsByCategory(categorySlug: string) {
   try {
     const { data, error } = await supabase
       .from('blog_posts')
-      .select(`
-        id,
-        title,
-        slug,
-        content,
-        excerpt,
-        featured_image,
-        published_at,
-        created_at,
-        updated_at,
-        status,
-        author_id,
-        category_id,
-        tags,
-        categories (
-          id,
-          name,
-          slug,
-          description
-        ),
-        authors (
-          id,
-          name,
-          email,
-          bio
-        )
-      `)
+      .select('*')
       .eq('status', 'published')
-      .eq('categories.slug', categorySlug)
+      .eq('category_id', categorySlug)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -144,35 +67,9 @@ export async function getBlogPostsByTag(tagSlug: string) {
   try {
     const { data, error } = await supabase
       .from('blog_posts')
-      .select(`
-        id,
-        title,
-        slug,
-        content,
-        excerpt,
-        featured_image,
-        published_at,
-        created_at,
-        updated_at,
-        status,
-        author_id,
-        category_id,
-        tags,
-        categories (
-          id,
-          name,
-          slug,
-          description
-        ),
-        authors (
-          id,
-          name,
-          email,
-          bio
-        )
-      `)
+      .select('*')
       .eq('status', 'published')
-      .eq('tags', tagSlug)
+      .contains('tags', [tagSlug])
       .order('created_at', { ascending: false });
 
     if (error) {
