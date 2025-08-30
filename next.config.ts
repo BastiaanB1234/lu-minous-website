@@ -57,9 +57,7 @@ const nextConfig: NextConfig = {
     ];
   },
   // Zorg ervoor dat API routes correct werken
-  experimental: {
-    serverComponentsExternalPackages: [],
-  },
+  serverExternalPackages: [],
 };
 
 export default nextConfig;
