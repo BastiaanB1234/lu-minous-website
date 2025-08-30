@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { BlogPost, BlogCategory, BlogTag, WebsiteStats } from '../lib/types';
-import { blogAdminManager } from '../lib/admin';
+import { AdminService } from '../lib/admin';
 
 interface AdminDashboardProps {
   className?: string;
@@ -10,11 +10,13 @@ interface AdminDashboardProps {
 
 export default function AdminDashboard({ className = '' }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<'posts' | 'categories' | 'tags' | 'analytics'>('posts');
-  const [posts] = useState<BlogPost[]>([]);
-  const [categories] = useState<BlogCategory[]>([]);
-  const [tags] = useState<BlogTag[]>([]);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<BlogCategory[]>([]);
+  const [tags, setTags] = useState<BlogTag[]>([]);
   const [stats, setStats] = useState<WebsiteStats | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const adminService = new AdminService();
 
   useEffect(() => {
     loadData();
@@ -24,7 +26,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     setLoading(true);
     try {
       // Load website statistics
-      const statsResponse = await blogAdminManager.getWebsiteStats();
+      const statsResponse = await adminService.getWebsiteStats();
       if (statsResponse.success && statsResponse.data) {
         setStats(statsResponse.data);
       }
@@ -117,19 +119,25 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categories.map((category) => (
-          <div key={category.id} className="bg-white rounded-lg shadow p-6">
-            <h4 className="text-lg font-semibold text-gray-900">{category.name}</h4>
-            <p className="text-gray-600 mt-2">{category.description}</p>
-            <div className="mt-4 flex justify-between items-center">
-              <span className="text-sm text-gray-500">{category.postCount} posts</span>
-              <div className="space-x-2">
-                <button className="text-indigo-600 hover:text-indigo-900 text-sm">Edit</button>
-                <button className="text-red-600 hover:text-red-900 text-sm">Delete</button>
+        {categories.length === 0 ? (
+          <div className="col-span-full text-center py-8 text-gray-500">
+            No categories yet. Create your first category!
+          </div>
+        ) : (
+          categories.map((category) => (
+            <div key={category.id} className="bg-white rounded-lg shadow p-6">
+              <h4 className="text-lg font-semibold text-gray-900">{category.name}</h4>
+              <p className="text-gray-600 mt-2">{category.description}</p>
+              <div className="mt-4 flex justify-between items-center">
+                <span className="text-sm text-gray-500">0 posts</span>
+                <div className="space-x-2">
+                  <button className="text-indigo-600 hover:text-indigo-900 text-sm">Edit</button>
+                  <button className="text-red-600 hover:text-red-900 text-sm">Delete</button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
@@ -143,16 +151,25 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
         </button>
       </div>
       
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex flex-wrap gap-2">
-          {tags.map((tag) => (
-            <div key={tag.id} className="flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-full">
-              <span className="text-sm font-medium text-gray-900">{tag.name}</span>
-              <span className="text-xs text-gray-500">({tag.postCount})</span>
-              <button className="text-red-600 hover:text-red-900 text-xs">×</button>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tags.length === 0 ? (
+          <div className="col-span-full text-center py-8 text-gray-500">
+            No tags yet. Create your first tag!
+          </div>
+        ) : (
+          tags.map((tag) => (
+            <div key={tag.id} className="bg-white rounded-lg shadow p-6">
+              <h4 className="text-lg font-semibold text-gray-900">{tag.name}</h4>
+              <div className="mt-4 flex justify-between items-center">
+                <span className="text-sm text-gray-500">0 posts</span>
+                <div className="space-x-2">
+                  <button className="text-indigo-600 hover:text-indigo-900 text-sm">Edit</button>
+                  <button className="text-red-600 hover:text-red-900 text-sm">Delete</button>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -161,56 +178,98 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     <div className="space-y-6">
       <h3 className="text-lg font-semibold">Website Analytics</h3>
       
-      {stats && (
+      {loading ? (
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-gray-500">Loading analytics...</p>
+        </div>
+      ) : stats ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-2xl font-bold text-blue-600">{stats.totalPosts}</div>
-            <div className="text-sm text-gray-600">Total Posts</div>
+            <div className="flex items-center">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">Total Posts</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.totalPosts}</p>
+              </div>
+            </div>
           </div>
+          
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-2xl font-bold text-green-600">{stats.totalViews}</div>
-            <div className="text-sm text-gray-600">Total Views</div>
+            <div className="flex items-center">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">Total Views</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.totalViews}</p>
+              </div>
+            </div>
           </div>
+          
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-2xl font-bold text-purple-600">{stats.totalCategories}</div>
-            <div className="text-sm text-gray-600">Categories</div>
+            <div className="flex items-center">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">Categories</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.totalCategories}</p>
+              </div>
+            </div>
           </div>
+          
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-2xl font-bold text-orange-600">{stats.totalTags}</div>
-            <div className="text-sm text-gray-600">Tags</div>
+            <div className="flex items-center">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">Tags</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.totalTags}</p>
+              </div>
+            </div>
           </div>
+        </div>
+      ) : (
+        <div className="text-center py-8 text-gray-500">
+          <p>No analytics data available.</p>
         </div>
       )}
-      
-      <div className="bg-white rounded-lg shadow p-6">
-        <h4 className="text-lg font-semibold mb-4">Recent Activity</h4>
-        <div className="text-gray-500 text-center py-8">
-          No recent activity to display
-        </div>
-      </div>
     </div>
   );
 
   return (
     <div className={`bg-gray-50 min-h-screen ${className}`}>
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Lu Minous Admin</h1>
-          <p className="text-gray-600 mt-2">Manage your spiritual wisdom blog</p>
+          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+          <p className="mt-2 text-gray-600">Manage your blog content and view analytics</p>
         </div>
 
-        {/* Navigation Tabs */}
+        {/* Tab Navigation */}
         <div className="border-b border-gray-200 mb-8">
           <nav className="-mb-px flex space-x-8">
             {[
-              { id: 'posts', label: 'Posts', count: posts.length },
-              { id: 'categories', label: 'Categories', count: categories.length },
-              { id: 'tags', label: 'Tags', count: tags.length },
+              { id: 'posts', label: 'Posts' },
+              { id: 'categories', label: 'Categories' },
+              { id: 'tags', label: 'Tags' },
               { id: 'analytics', label: 'Analytics' }
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as 'posts' | 'categories' | 'tags' | 'analytics')}
+                onClick={() => setActiveTab(tab.id as any)}
                 className={`py-2 px-1 border-b-2 font-medium text-sm ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
@@ -218,30 +277,18 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                 }`}
               >
                 {tab.label}
-                {tab.count !== undefined && (
-                  <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs">
-                    {tab.count}
-                  </span>
-                )}
               </button>
             ))}
           </nav>
         </div>
 
-        {/* Content */}
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading...</p>
-          </div>
-        ) : (
-          <div>
-            {activeTab === 'posts' && renderPostsTab()}
-            {activeTab === 'categories' && renderCategoriesTab()}
-            {activeTab === 'tags' && renderTagsTab()}
-            {activeTab === 'analytics' && renderAnalyticsTab()}
-          </div>
-        )}
+        {/* Tab Content */}
+        <div className="bg-white rounded-lg shadow p-6">
+          {activeTab === 'posts' && renderPostsTab()}
+          {activeTab === 'categories' && renderCategoriesTab()}
+          {activeTab === 'tags' && renderTagsTab()}
+          {activeTab === 'analytics' && renderAnalyticsTab()}
+        </div>
       </div>
     </div>
   );
