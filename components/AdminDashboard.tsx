@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { BlogPost, Category, Tag, WebsiteStats } from '../lib/types';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { AdminService } from '../lib/admin';
 import { getBlogPosts } from '../lib/blog-database';
+import { BlogPost, Category, Tag, WebsiteStats } from '../lib/types';
 
 interface AdminDashboardProps {
   className?: string;
@@ -22,47 +22,42 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      // Load website statistics
       const statsResponse = await adminService.getWebsiteStats();
       if (statsResponse.success && statsResponse.data) {
         setStats(statsResponse.data);
       }
 
-      // Load blog posts
       const blogPosts = await getBlogPosts();
       setPosts(blogPosts);
 
-      // Load categories and tags from posts
+      // Haal unieke categorieën op uit de database
       const uniqueCategories = new Map<string, Category>();
-      const uniqueTags = new Map<string, Tag>();
-
+      
+      // Voor nu maken we een eenvoudige categorie mapping
+      // Later kun je dit uitbreiden met echte categorie data
       blogPosts.forEach(post => {
-        if (post.categories && post.categories.length > 0) {
-          const category = post.categories[0];
-          uniqueCategories.set(category.slug, {
-            id: category.slug,
-            name: category.name,
-            slug: category.slug,
-            description: category.description || '',
+        if (post.category_id) {
+          uniqueCategories.set(post.category_id, {
+            id: post.category_id,
+            name: `Category ${post.category_id.slice(0, 8)}`, // Korte weergave van ID
+            slug: post.category_id,
+            description: 'Category from database',
             created_at: post.created_at,
             updated_at: post.updated_at
-          });
-        }
-
-        if (post.tags && Array.isArray(post.tags)) {
-          post.tags.forEach((tagName: string) => {
-            uniqueTags.set(tagName, {
-              id: tagName,
-              name: tagName,
-              slug: tagName.toLowerCase().replace(/\s+/g, '-'),
-              created_at: post.created_at
-            });
           });
         }
       });
 
       setCategories(Array.from(uniqueCategories.values()));
-      setTags(Array.from(uniqueTags.values()));
+
+      // Voor tags maken we een eenvoudige lijst
+      // Later kun je dit uitbreiden met echte tag functionaliteit
+      const sampleTags: Tag[] = [
+        { id: '1', name: 'Spiritueel', slug: 'spiritueel', created_at: new Date().toISOString() },
+        { id: '2', name: 'Persoonlijke Groei', slug: 'persoonlijke-groei', created_at: new Date().toISOString() },
+        { id: '3', name: 'Relaties', slug: 'relaties', created_at: new Date().toISOString() }
+      ];
+      setTags(sampleTags);
 
     } catch (error) {
       console.error('Error loading data:', error);
@@ -83,7 +78,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
           + New Post
         </button>
       </div>
-      
+
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -95,7 +90,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                 Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Category
+                Category ID
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Created
@@ -129,7 +124,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {post.categories && post.categories.length > 0 ? post.categories[0].name : 'N/A'}
+                    {post.category_id ? post.category_id.slice(0, 8) + '...' : 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(post.created_at).toLocaleDateString()}
@@ -155,7 +150,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
           + New Category
         </button>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.length === 0 ? (
           <div className="col-span-full text-center py-8 text-gray-500">
@@ -168,7 +163,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
               <p className="text-gray-600 mt-2">{category.description}</p>
               <div className="mt-4 flex justify-between items-center">
                 <span className="text-sm text-gray-500">
-                  {posts.filter(post => post.categories && post.categories.length > 0 && post.categories[0].slug === category.slug).length} posts
+                  {posts.filter(post => post.category_id === category.id).length} posts
                 </span>
                 <div className="space-x-2">
                   <button className="text-indigo-600 hover:text-indigo-900 text-sm">Edit</button>
@@ -190,7 +185,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
           + New Tag
         </button>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tags.length === 0 ? (
           <div className="col-span-full text-center py-8 text-gray-500">
@@ -202,7 +197,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
               <h4 className="text-lg font-semibold text-gray-900">{tag.name}</h4>
               <div className="mt-4 flex justify-between items-center">
                 <span className="text-sm text-gray-500">
-                  {posts.filter(post => post.tags && post.tags.includes(tag.name)).length} posts
+                  Sample tag (not yet connected to posts)
                 </span>
                 <div className="space-x-2">
                   <button className="text-indigo-600 hover:text-indigo-900 text-sm">Edit</button>
@@ -219,7 +214,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   const renderAnalyticsTab = () => (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold">Website Analytics</h3>
-      
+
       {loading ? (
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
@@ -240,7 +235,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -255,7 +250,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-lg">
@@ -269,7 +264,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="p-2 bg-orange-100 rounded-lg">
@@ -300,7 +295,6 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
           <p className="mt-2 text-gray-600">Manage your blog content and view analytics</p>
         </div>
 
-        {/* Tab Navigation */}
         <div className="border-b border-gray-200 mb-8">
           <nav className="-mb-px flex space-x-8">
             {[
@@ -314,7 +308,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                 onClick={() => setActiveTab(tab.id as 'posts' | 'categories' | 'tags' | 'analytics')}
                 className={`py-2 px-1 border-b-2 font-medium text-sm ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -324,7 +318,6 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
           </nav>
         </div>
 
-        {/* Tab Content */}
         <div className="bg-white rounded-lg shadow p-6">
           {activeTab === 'posts' && renderPostsTab()}
           {activeTab === 'categories' && renderCategoriesTab()}

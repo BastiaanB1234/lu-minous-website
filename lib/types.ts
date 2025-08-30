@@ -14,19 +14,7 @@ export interface BlogPost {
   status: 'draft' | 'published'
   author_id?: string
   category_id?: string
-  tags?: string[]
-  categories?: {
-    id: string
-    name: string
-    slug: string
-    description?: string
-  }[]
-  authors?: {
-    id: string
-    name: string
-    email?: string
-    bio?: string
-  }[]
+  featured?: boolean
 }
 
 export interface Category {
@@ -55,42 +43,35 @@ export interface Author {
   updated_at: string
 }
 
-export interface BlogCategory {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  postCount: number;
-}
-
-export interface BlogTag {
-  id: string;
-  name: string;
-  slug: string;
-  postCount: number;
-}
-
 export interface WebsiteStats {
-  totalPosts: number;
-  totalViews: number;
-  totalCategories: number;
-  totalTags: number;
-  lastUpdated: string;
+  totalPosts: number
+  totalViews: number
+  totalCategories: number
+  totalTags: number
+  lastUpdated: string
 }
 
 export interface AdminUser {
-  id: string;
-  username: string;
-  email: string;
-  role: 'admin' | 'editor' | 'viewer';
-  lastLogin: string;
-  permissions: string[];
+  id: string
+  email: string
+  role: 'admin' | 'editor' | 'viewer'
+  created_at: string
 }
 
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-  timestamp: string;
+export interface ApiResponse<T = any> {
+  success: boolean
+  data?: T
+  error?: string
+  message?: string
+  timestamp: string
+}
+
+export interface CreatePostData {
+  title: string
+  excerpt?: string
+  content: string
+  status?: 'draft' | 'published'
+  featured_image?: string
+  category_id?: string
+  tags?: string[]
 }
