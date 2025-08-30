@@ -13,8 +13,12 @@ export default function FeaturedProducts() {
     async function loadFeaturedProducts() {
       try {
         setLoading(true);
-        // Use static JSON files as temporary solution
-        const response = await fetch('/api/products.json');
+        // Use static JSON files with bypass token
+        const response = await fetch('/api/products.json', {
+          headers: {
+            'x-vercel-protection-bypass': 'LhaKcRSGcRe5cU6WxBVrqiIleQJkYeSR'
+          }
+        });
         const result = await response.json();
         
         if (result.success) {
