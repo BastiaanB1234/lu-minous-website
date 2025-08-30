@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getCategories } from '../../../lib/database';
 
+// Force dynamic rendering to avoid deployment protection issues
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const categories = await getCategories();
