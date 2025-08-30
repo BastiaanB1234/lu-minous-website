@@ -89,10 +89,10 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {post.category}
+                    {post.categories?.name || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {post.viewCount}
+                    N/A
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
