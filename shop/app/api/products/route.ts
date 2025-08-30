@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined;
 
     const products = await getProducts({
-      category,
+      category: category || undefined,
       featured,
       limit
     });
