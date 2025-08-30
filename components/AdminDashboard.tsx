@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { AdminService } from '../lib/admin';
-import { getBlogPosts } from '../lib/blog-database';
+import { getBlogPosts, getCategories } from '../lib/blog-database';
 import { BlogPost, Category, Tag, WebsiteStats, CreatePostData } from '../lib/types';
 
 interface AdminDashboardProps {
@@ -16,6 +16,7 @@ interface PostFormData {
   status: 'draft' | 'published';
   category_id: string;
   tags: string[];
+  featured_image?: string;
 }
 
 interface CategoryFormData {
@@ -34,7 +35,8 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   const [tags, setTags] = useState<Tag[]>([]);
   const [stats, setStats] = useState<WebsiteStats | null>(null);
   const [loading, setLoading] = useState(false);
-  
+  const [postStatusFilter, setPostStatusFilter] = useState<'all' | 'draft' | 'published'>('all');
+
   // Form states
   const [showPostForm, setShowPostForm] = useState(false);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
@@ -50,7 +52,8 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     content: '',
     status: 'draft',
     category_id: '',
-    tags: []
+    tags: [],
+    featured_image: ''
   });
   
   const [categoryForm, setCategoryForm] = useState<CategoryFormData>({
@@ -72,17 +75,21 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
         setStats(statsResponse.data);
       }
 
-      const blogPosts = await getBlogPosts();
-      setPosts(blogPosts);
+      // Haal ALLE posts op (draft en published)
+      const [publishedPosts, draftPosts] = await Promise.all([
+        getBlogPosts('published'),
+        getBlogPosts('draft')
+      ]);
+      
+      // Combineer alle posts
+      const allPosts = [...publishedPosts, ...draftPosts];
+      setPosts(allPosts);
 
-      // Haal echte categories op uit de database
-      const categoriesResponse = await fetch('/api/blog/categories');
-      if (categoriesResponse.ok) {
-        const categoriesData = await categoriesResponse.json();
-        setCategories(categoriesData.data || []);
-      }
+      // Haal categories op uit de database
+      const categories = await getCategories();
+      setCategories(categories);
 
-      // Haal echte tags op uit de database
+      // Haal tags op uit de database
       const tagsResponse = await fetch('/api/blog/tags');
       if (tagsResponse.ok) {
         const tagsData = await tagsResponse.json();
@@ -100,19 +107,17 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     loadData();
   }, [loadData]);
 
-  // Post functions
-  const handleCreatePost = async () => {
-    try {
-      const postData: CreatePostData = {
-        title: postForm.title,
-        excerpt: postForm.excerpt,
-        content: postForm.content,
-        status: postForm.status,
-        category_id: postForm.category_id || undefined,
-        tags: postForm.tags
-      };
+  // Filter posts based on status
+  const filteredPosts = posts.filter(post => {
+    if (postStatusFilter === 'all') return true;
+    return post.status === postStatusFilter;
+  });
 
-      const response = await adminService.createBlogPost(postData);
+  // Post functions
+  const handleCreatePost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await adminService.createBlogPost(postForm);
       if (response.success) {
         setShowPostForm(false);
         resetPostForm();
@@ -126,20 +131,12 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     }
   };
 
-  const handleEditPost = async () => {
+  const handleEditPost = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!editingPost) return;
     
     try {
-      const postData: Partial<CreatePostData> = {
-        title: postForm.title,
-        excerpt: postForm.excerpt,
-        content: postForm.content,
-        status: postForm.status,
-        category_id: postForm.category_id || undefined,
-        tags: postForm.tags
-      };
-
-      const response = await adminService.updateBlogPost(editingPost.id, postData);
+      const response = await adminService.updateBlogPost(editingPost.id, postForm);
       if (response.success) {
         setShowPostForm(false);
         setEditingPost(null);
@@ -155,7 +152,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   };
 
   const handleDeletePost = async (postId: string) => {
-    if (!confirm('Weet je zeker dat je deze post wilt verwijderen?')) return;
+    if (!confirm('Are you sure you want to delete this post?')) return;
     
     try {
       const response = await adminService.deleteBlogPost(postId);
@@ -178,7 +175,8 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       content: post.content,
       status: post.status,
       category_id: post.category_id || '',
-      tags: post.tags || []
+      tags: post.tags || [],
+      featured_image: post.featured_image || ''
     });
     setShowPostForm(true);
   };
@@ -190,19 +188,21 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       content: '',
       status: 'draft',
       category_id: '',
-      tags: []
+      tags: [],
+      featured_image: ''
     });
     setEditingPost(null);
   };
 
   // Category functions
-  const handleCreateCategory = async () => {
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       const response = await adminService.createCategory(categoryForm);
       if (response.success) {
         setShowCategoryForm(false);
         resetCategoryForm();
-        loadData(); // Reload data
+        loadData();
       } else {
         alert('Error creating category: ' + response.error);
       }
@@ -212,7 +212,8 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     }
   };
 
-  const handleEditCategory = async () => {
+  const handleEditCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!editingCategory) return;
     
     try {
@@ -221,7 +222,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
         setShowCategoryForm(false);
         setEditingCategory(null);
         resetCategoryForm();
-        loadData(); // Reload data
+        loadData();
       } else {
         alert('Error updating category: ' + response.error);
       }
@@ -232,12 +233,12 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   };
 
   const handleDeleteCategory = async (categoryId: string) => {
-    if (!confirm('Weet je zeker dat je deze categorie wilt verwijderen?')) return;
+    if (!confirm('Are you sure you want to delete this category?')) return;
     
     try {
       const response = await adminService.deleteCategory(categoryId);
       if (response.success) {
-        loadData(); // Reload data
+        loadData();
       } else {
         alert('Error deleting category: ' + response.error);
       }
@@ -265,13 +266,14 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   };
 
   // Tag functions
-  const handleCreateTag = async () => {
+  const handleCreateTag = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       const response = await adminService.createTag(tagForm);
       if (response.success) {
         setShowTagForm(false);
         resetTagForm();
-        loadData(); // Reload data
+        loadData();
       } else {
         alert('Error creating tag: ' + response.error);
       }
@@ -281,7 +283,8 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     }
   };
 
-  const handleEditTag = async () => {
+  const handleEditTag = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!editingTag) return;
     
     try {
@@ -290,7 +293,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
         setShowTagForm(false);
         setEditingTag(null);
         resetTagForm();
-        loadData(); // Reload data
+        loadData();
       } else {
         alert('Error updating tag: ' + response.error);
       }
@@ -301,12 +304,12 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   };
 
   const handleDeleteTag = async (tagId: string) => {
-    if (!confirm('Weet je zeker dat je deze tag wilt verwijderen?')) return;
+    if (!confirm('Are you sure you want to delete this tag?')) return;
     
     try {
       const response = await adminService.deleteTag(tagId);
       if (response.success) {
-        loadData(); // Reload data
+        loadData();
       } else {
         alert('Error deleting tag: ' + response.error);
       }
@@ -331,99 +334,158 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     setEditingTag(null);
   };
 
+  // Image upload function
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('slug', postForm.title.toLowerCase().replace(/\s+/g, '-'));
+
+    try {
+      const response = await fetch('/api/blog/upload-image', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPostForm(prev => ({
+          ...prev,
+          featured_image: data.url
+        }));
+      } else {
+        alert('Error uploading image');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Error uploading image');
+    }
+  };
+
+  // Render functions
   const renderPostForm = () => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-semibold mb-4">
+      <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <h2 className="text-2xl font-bold mb-4">
           {editingPost ? 'Edit Post' : 'Create New Post'}
-        </h3>
-        
-        <div className="space-y-4">
+        </h2>
+        <form onSubmit={editingPost ? handleEditPost : handleCreatePost} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
             <input
               type="text"
               value={postForm.title}
-              onChange={(e) => setPostForm({...postForm, title: e.target.value})}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              onChange={(e) => setPostForm(prev => ({ ...prev, title: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700">Excerpt</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Excerpt</label>
             <textarea
               value={postForm.excerpt}
-              onChange={(e) => setPostForm({...postForm, excerpt: e.target.value})}
+              onChange={(e) => setPostForm(prev => ({ ...prev, excerpt: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={3}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700">Content</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
             <textarea
               value={postForm.content}
-              onChange={(e) => setPostForm({...postForm, content: e.target.value})}
-              rows={6}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              onChange={(e) => setPostForm(prev => ({ ...prev, content: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={10}
+              required
             />
           </div>
           
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Status</label>
-            <select
-              value={postForm.status}
-              onChange={(e) => setPostForm({...postForm, status: e.target.value as 'draft' | 'published'})}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-            </select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <select
+                value={postForm.status}
+                onChange={(e) => setPostForm(prev => ({ ...prev, status: e.target.value as 'draft' | 'published' }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <select
+                value={postForm.category_id}
+                onChange={(e) => setPostForm(prev => ({ ...prev, category_id: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Category</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700">Category</label>
-            <select
-              value={postForm.category_id}
-              onChange={(e) => setPostForm({...postForm, category_id: e.target.value})}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              <option value="">Select Category</option>
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>{category.name}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Tags (comma separated)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma separated)</label>
             <input
               type="text"
               value={postForm.tags.join(', ')}
-              onChange={(e) => setPostForm({...postForm, tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag)})}
-              placeholder="liefde, verbinding, groei"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              onChange={(e) => setPostForm(prev => ({ 
+                ...prev, 
+                tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag)
+              }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="liefde, groei, spiritualiteit"
             />
           </div>
-        </div>
-        
-        <div className="flex justify-end space-x-3 mt-6">
-          <button
-            onClick={() => {
-              setShowPostForm(false);
-              resetPostForm();
-            }}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={editingPost ? handleEditPost : handleCreatePost}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-          >
-            {editingPost ? 'Update Post' : 'Create Post'}
-          </button>
-        </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Featured Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {postForm.featured_image && (
+              <div className="mt-2">
+                <img 
+                  src={postForm.featured_image} 
+                  alt="Featured" 
+                  className="w-32 h-32 object-cover rounded"
+                />
+              </div>
+            )}
+          </div>
+          
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={() => {
+                setShowPostForm(false);
+                resetPostForm();
+              }}
+              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              {editingPost ? 'Update Post' : 'Create Post'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -431,49 +493,50 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   const renderCategoryForm = () => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 className="text-lg font-semibold mb-4">
+        <h2 className="text-2xl font-bold mb-4">
           {editingCategory ? 'Edit Category' : 'Create New Category'}
-        </h3>
-        
-        <div className="space-y-4">
+        </h2>
+        <form onSubmit={editingCategory ? handleEditCategory : handleCreateCategory} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input
               type="text"
               value={categoryForm.name}
-              onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              onChange={(e) => setCategoryForm(prev => ({ ...prev, name: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700">Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <textarea
               value={categoryForm.description}
-              onChange={(e) => setCategoryForm({...categoryForm, description: e.target.value})}
+              onChange={(e) => setCategoryForm(prev => ({ ...prev, description: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={3}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
-        </div>
-        
-        <div className="flex justify-end space-x-3 mt-6">
-          <button
-            onClick={() => {
-              setShowCategoryForm(false);
-              resetCategoryForm();
-            }}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={editingCategory ? handleEditCategory : handleCreateCategory}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-          >
-            {editingCategory ? 'Update Category' : 'Create Category'}
-          </button>
-        </div>
+          
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={() => {
+                setShowCategoryForm(false);
+                resetCategoryForm();
+              }}
+              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              {editingCategory ? 'Update Category' : 'Create Category'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -481,313 +544,247 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   const renderTagForm = () => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 className="text-lg font-semibold mb-4">
+        <h2 className="text-2xl font-bold mb-4">
           {editingTag ? 'Edit Tag' : 'Create New Tag'}
-        </h3>
-        
-        <div className="space-y-4">
+        </h2>
+        <form onSubmit={editingTag ? handleEditTag : handleCreateTag} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input
               type="text"
               value={tagForm.name}
-              onChange={(e) => setTagForm({...tagForm, name: e.target.value})}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              onChange={(e) => setTagForm(prev => ({ ...prev, name: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             />
           </div>
-        </div>
-        
-        <div className="flex justify-end space-x-3 mt-6">
-          <button
-            onClick={() => {
-              setShowTagForm(false);
-              resetTagForm();
-            }}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={editingTag ? handleEditTag : handleCreateTag}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-          >
-            {editingTag ? 'Update Tag' : 'Create Tag'}
-          </button>
-        </div>
+          
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={() => {
+                setShowTagForm(false);
+                resetTagForm();
+              }}
+              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              {editingTag ? 'Update Tag' : 'Create Tag'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 
   const renderPostsTab = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Blog Posts ({posts.length})</h3>
-        <button 
-          onClick={() => setShowPostForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          + New Post
-        </button>
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-semibold">Blog Posts ({filteredPosts.length})</h3>
+        <div className="flex space-x-3">
+          <select
+            value={postStatusFilter}
+            onChange={(e) => setPostStatusFilter(e.target.value as 'all' | 'draft' | 'published')}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">All Posts</option>
+            <option value="draft">Drafts</option>
+            <option value="published">Published</option>
+          </select>
+          <button
+            onClick={() => setShowPostForm(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+          >
+            <span className="mr-2">+</span>
+            New Post
+          </button>
+        </div>
       </div>
-
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Category
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tags
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Created
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {posts.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
-                  {loading ? 'Loading posts...' : 'No posts yet. Create your first blog post!'}
-                </td>
-              </tr>
-            ) : (
-              posts.map((post) => {
-                const category = categories.find(cat => cat.id === post.category_id);
-                return (
-                  <tr key={post.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{post.title}</div>
-                      <div className="text-sm text-gray-500">{post.excerpt}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        post.status === 'published' ? 'bg-green-100 text-green-800' :
-                        post.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
+      
+      {loading ? (
+        <div className="text-center py-8">Loading...</div>
+      ) : filteredPosts.length > 0 ? (
+        <div className="space-y-4">
+          {filteredPosts.map((post) => {
+            const category = categories.find(cat => cat.id === post.category_id);
+            return (
+              <div key={post.id} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-lg mb-2">{post.title}</h4>
+                    <p className="text-gray-600 text-sm mb-3">{post.excerpt}</p>
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        post.status === 'published' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-yellow-100 text-yellow-800'
                       }`}>
                         {post.status}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {category ? category.name : 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {post.tags && post.tags.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {post.tags.map((tag, index) => (
-                            <span key={index} className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-gray-400">Geen tags</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(post.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button 
-                        onClick={() => openEditPost(post)}
-                        className="text-indigo-600 hover:text-indigo-900 mr-3"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDeletePost(post.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+                      <span>Category: {category?.name || 'N/A'}</span>
+                      <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                    </div>
+                    {post.tags && post.tags.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {post.tags.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex space-x-2 ml-4">
+                    <button
+                      onClick={() => openEditPost(post)}
+                      className="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeletePost(post.id)}
+                      className="px-3 py-1 text-red-600 hover:bg-red-50 rounded"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="text-center py-8 text-gray-500">
+          No posts found.
+        </div>
+      )}
     </div>
   );
 
   const renderCategoriesTab = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Categories ({categories.length})</h3>
-        <button 
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-semibold">Categories ({categories.length})</h3>
+        <button
           onClick={() => setShowCategoryForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
         >
           + New Category
         </button>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categories.length === 0 ? (
-          <div className="col-span-full text-center py-8 text-gray-500">
-            {loading ? 'Loading categories...' : 'No categories yet. Create your first category!'}
-          </div>
-        ) : (
-          categories.map((category) => (
-            <div key={category.id} className="bg-white rounded-lg shadow p-6">
-              <h4 className="text-lg font-semibold text-gray-900">{category.name}</h4>
-              <p className="text-gray-600 mt-2">{category.description}</p>
-              <div className="mt-4 flex justify-between items-center">
-                <span className="text-sm text-gray-500">
-                  {posts.filter(post => post.category_id === category.id).length} posts
-                </span>
-                <div className="space-x-2">
-                  <button 
+      
+      {loading ? (
+        <div className="text-center py-8">Loading...</div>
+      ) : categories.length > 0 ? (
+        <div className="space-y-4">
+          {categories.map((category) => (
+            <div key={category.id} className="border border-gray-200 rounded-lg p-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h4 className="font-semibold text-lg mb-2">{category.name}</h4>
+                  <p className="text-gray-600 text-sm">{category.description}</p>
+                </div>
+                <div className="flex space-x-2 ml-4">
+                  <button
                     onClick={() => openEditCategory(category)}
-                    className="text-indigo-600 hover:text-indigo-900 text-sm"
+                    className="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded"
                   >
                     Edit
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleDeleteCategory(category.id)}
-                    className="text-red-600 hover:text-red-900 text-sm"
+                    className="px-3 py-1 text-red-600 hover:bg-red-50 rounded"
                   >
                     Delete
                   </button>
                 </div>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8 text-gray-500">
+          No categories found.
+        </div>
+      )}
     </div>
   );
 
   const renderTagsTab = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Tags ({tags.length})</h3>
-        <button 
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-semibold">Tags ({tags.length})</h3>
+        <button
           onClick={() => setShowTagForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
         >
           + New Tag
         </button>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tags.length === 0 ? (
-          <div className="col-span-full text-center py-8 text-gray-500">
-            {loading ? 'Loading tags...' : 'No tags yet. Create your first tag!'}
-          </div>
-        ) : (
-          tags.map((tag) => (
-            <div key={tag.id} className="bg-white rounded-lg shadow p-6">
-              <h4 className="text-lg font-semibold text-gray-900">{tag.name}</h4>
-              <div className="mt-4 flex justify-between items-center">
-                <span className="text-sm text-gray-500">
-                  {posts.filter(post => post.tags && post.tags.includes(tag.name)).length} posts
-                </span>
-                <div className="space-x-2">
-                  <button 
+      
+      {loading ? (
+        <div className="text-center py-8">Loading...</div>
+      ) : tags.length > 0 ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {tags.map((tag) => (
+            <div key={tag.id} className="border border-gray-200 rounded-lg p-4">
+              <div className="flex justify-between items-center">
+                <span className="font-medium">{tag.name}</span>
+                <div className="flex space-x-2">
+                  <button
                     onClick={() => openEditTag(tag)}
-                    className="text-indigo-600 hover:text-indigo-900 text-sm"
+                    className="px-2 py-1 text-blue-600 hover:bg-blue-50 rounded text-sm"
                   >
                     Edit
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleDeleteTag(tag.id)}
-                    className="text-red-600 hover:text-red-900 text-sm"
+                    className="px-2 py-1 text-red-600 hover:bg-red-50 rounded text-sm"
                   >
                     Delete
                   </button>
                 </div>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8 text-gray-500">
+          No tags found.
+        </div>
+      )}
     </div>
   );
 
   const renderAnalyticsTab = () => (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold">Website Analytics</h3>
-
-      {loading ? (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-500">Loading analytics...</p>
-        </div>
-      ) : stats ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Posts</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.totalPosts}</p>
-              </div>
-            </div>
+    <div>
+      <h3 className="text-xl font-semibold mb-6">Analytics</h3>
+      {stats ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h4 className="text-lg font-semibold mb-2">Total Posts</h4>
+            <p className="text-3xl font-bold text-blue-600">{stats.totalPosts}</p>
           </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Views</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.totalViews}</p>
-              </div>
-            </div>
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h4 className="text-lg font-semibold mb-2">Published Posts</h4>
+            <p className="text-3xl font-bold text-green-600">{stats.publishedPosts}</p>
           </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Categories</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.totalCategories}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Tags</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.totalTags}</p>
-              </div>
-            </div>
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h4 className="text-lg font-semibold mb-2">Draft Posts</h4>
+            <p className="text-3xl font-bold text-yellow-600">{stats.draftPosts}</p>
           </div>
         </div>
       ) : (
         <div className="text-center py-8 text-gray-500">
-          <p>No analytics data available.</p>
+          No analytics data available.
         </div>
       )}
     </div>
@@ -800,7 +797,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
           <p className="mt-2 text-gray-600">Manage your blog content and view analytics</p>
         </div>
-
+        
         <div className="border-b border-gray-200 mb-8">
           <nav className="-mb-px flex space-x-8">
             {[
@@ -823,19 +820,18 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
             ))}
           </nav>
         </div>
-
+        
         <div className="bg-white rounded-lg shadow p-6">
           {activeTab === 'posts' && renderPostsTab()}
           {activeTab === 'categories' && renderCategoriesTab()}
           {activeTab === 'tags' && renderTagsTab()}
           {activeTab === 'analytics' && renderAnalyticsTab()}
         </div>
+        
+        {showPostForm && renderPostForm()}
+        {showCategoryForm && renderCategoryForm()}
+        {showTagForm && renderTagForm()}
       </div>
-
-      {/* Modals */}
-      {showPostForm && renderPostForm()}
-      {showCategoryForm && renderCategoryForm()}
-      {showTagForm && renderTagForm()}
     </div>
   );
 }

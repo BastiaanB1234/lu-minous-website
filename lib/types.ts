@@ -46,6 +46,8 @@ export interface Author {
 
 export interface WebsiteStats {
   totalPosts: number
+  publishedPosts: number
+  draftPosts: number
   totalViews: number
   totalCategories: number
   totalTags: number
