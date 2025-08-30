@@ -1,66 +1,69 @@
 // Lu Minous Website - Admin Management System
 // Clean, professional admin interface for blog management
 
-import { BlogPost, BlogCategory, BlogTag, ApiResponse, WebsiteStats } from './types';
-import { blogPosts, blogCategories, blogTags } from './blog-data';
+import { supabase } from './supabase';
+import { BlogPost, BlogCategory, BlogTag, WebsiteStats } from './types';
 
-// Simple logger for admin operations
-const logger = {
-  info: (msg: string) => console.log(`[Admin] ${msg}`),
-  error: (msg: string) => console.error(`[Admin] ${msg}`)
-};
+interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+  timestamp: string;
+}
 
-export class BlogAdminManager {
-  private static instance: BlogAdminManager;
-  
-  private constructor() {}
-  
-  static getInstance(): BlogAdminManager {
-    if (!BlogAdminManager.instance) {
-      BlogAdminManager.instance = new BlogAdminManager();
-    }
-    return BlogAdminManager.instance;
+interface CreatePostData {
+  title: string;
+  excerpt?: string;
+  content: string;
+  status?: 'draft' | 'published';
+  category_id?: string;
+  tags?: string[];
+  featured_image?: string;
+}
+
+export class AdminService {
+  private generateId(): string {
+    return Math.random().toString(36).substr(2, 9);
+  }
+
+  private generateSlug(title: string): string {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
   }
 
   // Blog Post Management
-  async createBlogPost(postData: Partial<BlogPost>): Promise<ApiResponse<BlogPost>> {
+  async createBlogPost(postData: CreatePostData): Promise<ApiResponse<BlogPost>> {
     try {
-      const newPost: BlogPost = {
-        id: this.generateId(),
-        title: postData.title || '',
+      const newPost: Partial<BlogPost> = {
+        title: postData.title,
         excerpt: postData.excerpt || '',
-        content: postData.content || '',
-        slug: this.generateSlug(postData.title || ''),
-        author: postData.author || 'Lu Minous',
-        publishedAt: postData.publishedAt || new Date().toISOString(),
+        content: postData.content,
+        slug: this.generateSlug(postData.title),
         status: postData.status || 'draft',
-        featured: postData.featured || false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        category: postData.category || 'spiritual-growth',
+        featured_image: postData.featured_image,
+        category_id: postData.category_id,
         tags: postData.tags || [],
-        imageUrl: postData.imageUrl,
-        readTime: this.calculateReadTime(postData.content || ''),
-        viewCount: 0
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       };
 
-      // Save to blog-data.ts (temporary solution until database is implemented)
-      // We need to update the blogPosts array and write to file
-      try {
-        // Add to in-memory array
-        blogPosts.push(newPost);
-        
-        // Update post counts
-        this.updatePostCounts();
-        
-        logger.info(`✅ Blog post saved: ${newPost.title}`);
-      } catch (saveError) {
-        logger.error(`⚠️ Warning: Could not save to file: ${String(saveError)}`);
+      // Save to Supabase
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .insert([newPost])
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
       }
-      
+
       return {
         success: true,
-        data: newPost,
+        data: data as BlogPost,
         message: 'Blog post created successfully',
         timestamp: new Date().toISOString()
       };
@@ -73,13 +76,27 @@ export class BlogAdminManager {
     }
   }
 
-  async updateBlogPost(): Promise<ApiResponse<BlogPost>> {
+  async updateBlogPost(postId: string, postData: Partial<CreatePostData>): Promise<ApiResponse<BlogPost>> {
     try {
-      // Here you would typically update in database
-      // For now, we'll return success response
-      
+      const updateData = {
+        ...postData,
+        updated_at: new Date().toISOString()
+      };
+
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .update(updateData)
+        .eq('id', postId)
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
+
       return {
         success: true,
+        data: data as BlogPost,
         message: 'Blog post updated successfully',
         timestamp: new Date().toISOString()
       };
@@ -92,11 +109,17 @@ export class BlogAdminManager {
     }
   }
 
-  async deleteBlogPost(): Promise<ApiResponse<void>> {
+  async deleteBlogPost(postId: string): Promise<ApiResponse<void>> {
     try {
-      // Here you would typically delete from database
-      // For now, we'll return success response
-      
+      const { error } = await supabase
+        .from('blog_posts')
+        .delete()
+        .eq('id', postId);
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
+
       return {
         success: true,
         message: 'Blog post deleted successfully',
@@ -114,18 +137,86 @@ export class BlogAdminManager {
   // Category Management
   async createCategory(categoryData: Partial<BlogCategory>): Promise<ApiResponse<BlogCategory>> {
     try {
-      const newCategory: BlogCategory = {
-        id: this.generateId(),
+      const newCategory: Partial<BlogCategory> = {
         name: categoryData.name || '',
         slug: this.generateSlug(categoryData.name || ''),
         description: categoryData.description || '',
-        postCount: 0
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       };
+
+      const { data, error } = await supabase
+        .from('categories')
+        .insert([newCategory])
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
 
       return {
         success: true,
-        data: newCategory,
+        data: data as BlogCategory,
         message: 'Category created successfully',
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      };
+    }
+  }
+
+  async updateCategory(categoryId: string, categoryData: Partial<BlogCategory>): Promise<ApiResponse<BlogCategory>> {
+    try {
+      const updateData = {
+        ...categoryData,
+        updated_at: new Date().toISOString()
+      };
+
+      const { data, error } = await supabase
+        .from('categories')
+        .update(updateData)
+        .eq('id', categoryId)
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      return {
+        success: true,
+        data: data as BlogCategory,
+        message: 'Category updated successfully',
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      };
+    }
+  }
+
+  async deleteCategory(categoryId: string): Promise<ApiResponse<void>> {
+    try {
+      const { error } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', categoryId);
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      return {
+        success: true,
+        message: 'Category deleted successfully',
         timestamp: new Date().toISOString()
       };
     } catch (error) {
@@ -140,16 +231,25 @@ export class BlogAdminManager {
   // Tag Management
   async createTag(tagData: Partial<BlogTag>): Promise<ApiResponse<BlogTag>> {
     try {
-      const newTag: BlogTag = {
-        id: this.generateId(),
+      const newTag: Partial<BlogTag> = {
         name: tagData.name || '',
         slug: this.generateSlug(tagData.name || ''),
-        postCount: 0
+        created_at: new Date().toISOString()
       };
+
+      const { data, error } = await supabase
+        .from('tags')
+        .insert([newTag])
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
 
       return {
         success: true,
-        data: newTag,
+        data: data as BlogTag,
         message: 'Tag created successfully',
         timestamp: new Date().toISOString()
       };
@@ -162,59 +262,88 @@ export class BlogAdminManager {
     }
   }
 
-  // Utility functions
-  private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  async updateTag(tagId: string, tagData: Partial<BlogTag>): Promise<ApiResponse<BlogTag>> {
+    try {
+      const { data, error } = await supabase
+        .from('tags')
+        .update(tagData)
+        .eq('id', tagId)
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      return {
+        success: true,
+        data: data as BlogTag,
+        message: 'Tag updated successfully',
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      };
+    }
   }
 
-  private generateSlug(text: string): string {
-    return text
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim();
+  async deleteTag(tagId: string): Promise<ApiResponse<void>> {
+    try {
+      const { error } = await supabase
+        .from('tags')
+        .delete()
+        .eq('id', tagId);
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      return {
+        success: true,
+        message: 'Tag deleted successfully',
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      };
+    }
   }
 
-  private calculateReadTime(content: string): number {
-    const wordsPerMinute = 200;
-    const wordCount = content.split(/\s+/).length;
-    return Math.ceil(wordCount / wordsPerMinute);
-  }
-
-  // Update post counts for categories and tags
-  private updatePostCounts(): void {
-    // Update category post counts
-    blogCategories.forEach(category => {
-      category.postCount = this.getBlogPostsByCategory(category.slug).length;
-    });
-
-    // Update tag post counts
-    blogTags.forEach(tag => {
-      tag.postCount = this.getBlogPostsByTag(tag.slug).length;
-    });
-  }
-
-  // Get posts by category
-  private getBlogPostsByCategory(categorySlug: string): BlogPost[] {
-    return blogPosts.filter(post => post.category === categorySlug);
-  }
-
-  // Get posts by tag
-  private getBlogPostsByTag(tagSlug: string): BlogPost[] {
-    return blogPosts.filter(post => post.tags.includes(tagSlug));
-  }
-
-  // Analytics and Statistics
+  // Analytics
   async getWebsiteStats(): Promise<ApiResponse<WebsiteStats>> {
     try {
-      // Here you would typically get stats from database
-      const stats = {
-        totalPosts: 0,
-        totalViews: 0,
-        totalCategories: 0,
-        totalTags: 0,
-        lastUpdated: new Date().toISOString()
+      // Get post count
+      const { count: postCount, error: postError } = await supabase
+        .from('blog_posts')
+        .select('*', { count: 'exact', head: true });
+
+      if (postError) throw postError;
+
+      // Get category count
+      const { count: categoryCount, error: categoryError } = await supabase
+        .from('categories')
+        .select('*', { count: 'exact', head: true });
+
+      if (categoryError) throw categoryError;
+
+      // Get tag count
+      const { count: tagCount, error: tagError } = await supabase
+        .from('tags')
+        .select('*', { count: 'exact', head: true });
+
+      if (tagError) throw tagError;
+
+      const stats: WebsiteStats = {
+        totalPosts: postCount || 0,
+        totalViews: 0, // Not implemented yet
+        totalCategories: categoryCount || 0,
+        totalTags: tagCount || 0
       };
 
       return {
@@ -231,6 +360,3 @@ export class BlogAdminManager {
     }
   }
 }
-
-// Export singleton instance
-export const blogAdminManager = BlogAdminManager.getInstance();
