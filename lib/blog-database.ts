@@ -21,6 +21,26 @@ export async function getBlogPosts(status: 'draft' | 'published' = 'published') 
   }
 }
 
+export async function getCategories() {
+  try {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('name');
+
+    if (error) {
+      console.error('Error fetching categories:', error);
+      return [];
+    }
+
+    console.log('Fetched categories:', data?.length || 0);
+    return data || [];
+  } catch (error) {
+    console.error('Error in getCategories:', error);
+    return [];
+  }
+}
+
 export async function getBlogPostBySlug(slug: string) {
   try {
     const { data, error } = await supabase

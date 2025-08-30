@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, User, ArrowRight, Clock, Tag, FolderOpen } from 'lucide-react';
-import { getBlogPosts } from '@/lib/blog-database';
+import { getBlogPosts, getCategories } from '@/lib/blog-database';
 import { BlogPost, Category } from '@/lib/types';
 
 export const metadata: Metadata = {
@@ -14,26 +14,14 @@ export default async function BlogPage() {
   try {
     console.log('Starting to load blog page...');
     
-    // Haal posts op
-    const posts = await getBlogPosts();
-    console.log('Posts loaded:', posts.length);
+    // Haal posts en categories parallel op uit de database
+    const [posts, categories] = await Promise.all([
+      getBlogPosts(),
+      getCategories()
+    ]);
     
-    // Haal categories op
-    let categories: Category[] = [];
-    try {
-      const categoriesResponse = await fetch('/api/blog/categories', { cache: 'no-store' });
-      console.log('Categories response status:', categoriesResponse.status);
-      
-      if (categoriesResponse.ok) {
-        const categoriesData = await categoriesResponse.json();
-        categories = categoriesData.data || [];
-        console.log('Categories loaded:', categories.length);
-      } else {
-        console.error('Categories API failed:', categoriesResponse.statusText);
-      }
-    } catch (categoriesError) {
-      console.error('Error fetching categories:', categoriesError);
-    }
+    console.log('Posts loaded:', posts.length);
+    console.log('Categories loaded:', categories.length);
 
     return (
       <div className="min-h-screen bg-gray-50">
