@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, User, Calendar, Clock, Heart, MessageCircle, Share2, Tag, FolderOpen } from 'lucide-react';
 import { getBlogPostBySlug } from '@/lib/blog-database';
+import { BlogPost, Category } from '@/lib/types';
 
 interface BlogPostPageProps {
   params: {
@@ -33,11 +34,23 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   try {
-    const post = await getBlogPostBySlug(params.slug);
+    const [post, categoriesResponse] = await Promise.all([
+      getBlogPostBySlug(params.slug),
+      fetch('/api/blog/categories', { cache: 'no-store' })
+    ]);
 
     if (!post) {
       notFound();
     }
+
+    let categories: Category[] = [];
+    if (categoriesResponse.ok) {
+      const categoriesData = await categoriesResponse.json();
+      categories = categoriesData.data || [];
+    }
+
+    // Find category name by ID
+    const category = categories.find(cat => cat.id === post.category_id);
 
     // Calculate read time (average reading speed: 200 words per minute)
     const readTime = Math.ceil((post.content?.length || 0) / 200);
@@ -48,7 +61,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {/* Back Button */}
           <Link
             href="/blog"
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8 transition-colors"
+            className="inline-flex items-center text-blue-800 mb-8 transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Blog
@@ -106,11 +119,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {/* Categories and Tags */}
               <div className="mb-8 space-y-3">
                 {/* Category */}
-                {post.category_id && (
+                {category && (
                   <div className="flex items-center">
                     <FolderOpen className="h-4 w-4 mr-2 text-orange-500" />
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
-                      Category: {post.category_id}
+                      {category.name}
                     </span>
                   </div>
                 )}

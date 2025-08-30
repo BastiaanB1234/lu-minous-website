@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, User, ArrowRight, Clock, Tag, FolderOpen } from 'lucide-react';
 import { getBlogPosts } from '@/lib/blog-database';
-import { BlogPost } from '@/lib/types';
+import { BlogPost, Category } from '@/lib/types';
 
 export const metadata: Metadata = {
   title: 'Lu Minous Blog',
@@ -12,7 +12,17 @@ export const metadata: Metadata = {
 
 export default async function BlogPage() {
   try {
-    const posts = await getBlogPosts();
+    // Haal posts en categories parallel op
+    const [posts, categoriesResponse] = await Promise.all([
+      getBlogPosts(),
+      fetch('/api/blog/categories', { cache: 'no-store' })
+    ]);
+
+    let categories: Category[] = [];
+    if (categoriesResponse.ok) {
+      const categoriesData = await categoriesResponse.json();
+      categories = categoriesData.data || [];
+    }
 
     return (
       <div className="min-h-screen bg-gray-50">
@@ -32,7 +42,7 @@ export default async function BlogPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-8">All Posts</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard key={post.id} post={post} categories={categories} />
               ))}
             </div>
           </div>
@@ -64,9 +74,12 @@ export default async function BlogPage() {
   }
 }
 
-function PostCard({ post }: { post: BlogPost }) {
+function PostCard({ post, categories }: { post: BlogPost; categories: Category[] }) {
   // Calculate read time (average reading speed: 200 words per minute)
   const readTime = Math.ceil((post.content?.length || 0) / 200);
+  
+  // Find category name by ID
+  const category = categories.find(cat => cat.id === post.category_id);
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
@@ -114,11 +127,11 @@ function PostCard({ post }: { post: BlogPost }) {
         {/* Categories and Tags */}
         <div className="mb-4 space-y-2">
           {/* Category */}
-          {post.category_id && (
+          {category && (
             <div className="flex items-center">
               <FolderOpen className="h-3 w-3 mr-1 text-orange-500" />
               <span className="text-xs text-orange-600 font-medium">
-                Category: {post.category_id}
+                {category.name}
               </span>
             </div>
           )}
