@@ -30,34 +30,19 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       const blogPosts = await getBlogPosts();
       setPosts(blogPosts);
 
-      // Haal unieke categorieën op uit de database
-      const uniqueCategories = new Map<string, Category>();
-      
-      // Voor nu maken we een eenvoudige categorie mapping
-      // Later kun je dit uitbreiden met echte categorie data
-      blogPosts.forEach(post => {
-        if (post.category_id) {
-          uniqueCategories.set(post.category_id, {
-            id: post.category_id,
-            name: `Category ${post.category_id.slice(0, 8)}`, // Korte weergave van ID
-            slug: post.category_id,
-            description: 'Category from database',
-            created_at: post.created_at,
-            updated_at: post.updated_at
-          });
-        }
-      });
+      // Haal echte categories op uit de database
+      const categoriesResponse = await fetch('/api/blog/categories');
+      if (categoriesResponse.ok) {
+        const categoriesData = await categoriesResponse.json();
+        setCategories(categoriesData.data || []);
+      }
 
-      setCategories(Array.from(uniqueCategories.values()));
-
-      // Voor tags maken we een eenvoudige lijst
-      // Later kun je dit uitbreiden met echte tag functionaliteit
-      const sampleTags: Tag[] = [
-        { id: '1', name: 'Spiritueel', slug: 'spiritueel', created_at: new Date().toISOString() },
-        { id: '2', name: 'Persoonlijke Groei', slug: 'persoonlijke-groei', created_at: new Date().toISOString() },
-        { id: '3', name: 'Relaties', slug: 'relaties', created_at: new Date().toISOString() }
-      ];
-      setTags(sampleTags);
+      // Haal echte tags op uit de database
+      const tagsResponse = await fetch('/api/blog/tags');
+      if (tagsResponse.ok) {
+        const tagsData = await tagsResponse.json();
+        setTags(tagsData.data || []);
+      }
 
     } catch (error) {
       console.error('Error loading data:', error);
@@ -90,7 +75,10 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                 Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Category ID
+                Category
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Tags
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Created
@@ -103,38 +91,54 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
           <tbody className="bg-white divide-y divide-gray-200">
             {posts.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
                   {loading ? 'Loading posts...' : 'No posts yet. Create your first blog post!'}
                 </td>
               </tr>
             ) : (
-              posts.map((post) => (
-                <tr key={post.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{post.title}</div>
-                    <div className="text-sm text-gray-500">{post.excerpt}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      post.status === 'published' ? 'bg-green-100 text-green-800' :
-                      post.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {post.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {post.category_id ? post.category_id.slice(0, 8) + '...' : 'N/A'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(post.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
-                    <button className="text-red-600 hover:text-red-900">Delete</button>
-                  </td>
-                </tr>
-              ))
+              posts.map((post) => {
+                const category = categories.find(cat => cat.id === post.category_id);
+                return (
+                  <tr key={post.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{post.title}</div>
+                      <div className="text-sm text-gray-500">{post.excerpt}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        post.status === 'published' ? 'bg-green-100 text-green-800' :
+                        post.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {post.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {category ? category.name : 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {post.tags && post.tags.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {post.tags.map((tag, index) => (
+                            <span key={index} className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">Geen tags</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(post.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+                      <button className="text-red-600 hover:text-red-900">Delete</button>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -197,7 +201,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
               <h4 className="text-lg font-semibold text-gray-900">{tag.name}</h4>
               <div className="mt-4 flex justify-between items-center">
                 <span className="text-sm text-gray-500">
-                  Sample tag (not yet connected to posts)
+                  {posts.filter(post => post.tags && post.tags.includes(tag.name)).length} posts
                 </span>
                 <div className="space-x-2">
                   <button className="text-indigo-600 hover:text-indigo-900 text-sm">Edit</button>

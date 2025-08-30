@@ -15,6 +15,7 @@ export interface BlogPost {
   author_id?: string
   category_id?: string
   featured?: boolean
+  tags?: string[]
 }
 
 export interface Category {
