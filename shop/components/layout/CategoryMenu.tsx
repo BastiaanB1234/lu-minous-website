@@ -13,7 +13,8 @@ export default function CategoryMenu() {
     async function loadCategories() {
       try {
         setLoading(true);
-        const response = await fetch('/api/categories');
+        // Use static JSON files as temporary solution
+        const response = await fetch('/api/categories.json');
         const result = await response.json();
         
         if (result.success) {
@@ -36,12 +37,12 @@ export default function CategoryMenu() {
     return <div className="px-4 py-2 text-gray-500">Laden...</div>;
   }
 
-  if (error || categories.length === 0) {
-    return (
-      <div className="px-4 py-2 text-gray-500">
-        {error ? 'Fout bij laden' : 'Geen categorieën gevonden'}
-      </div>
-    );
+  if (error) {
+    return <div className="px-4 py-2 text-gray-500">Fout bij laden</div>;
+  }
+
+  if (categories.length === 0) {
+    return <div className="px-4 py-2 text-gray-500">Geen categorieën gevonden</div>;
   }
 
   return (
