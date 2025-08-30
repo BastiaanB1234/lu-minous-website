@@ -75,7 +75,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <div className="flex items-center space-x-6 text-sm text-gray-500 mb-6">
                 <div className="flex items-center">
                   <User className="h-4 w-4 mr-2" />
-                  {post.authors?.name || 'Lu Minous'}
+                  {post.authors && post.authors.length > 0 ? post.authors[0].name : 'Lu Minous'}
                 </div>
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-2" />
@@ -106,12 +106,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {/* Tags */}
               {post.tags && post.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-8">
-                  {post.tags.map((tag: { name: string; slug: string }) => (
+                  {post.tags.map((tag: string) => (
                     <span
-                      key={tag.name}
+                      key={tag}
                       className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
                     >
-                      {tag.name}
+                      {tag}
                     </span>
                   ))}
                 </div>

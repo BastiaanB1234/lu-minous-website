@@ -37,12 +37,13 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       const uniqueTags = new Map<string, Tag>();
 
       blogPosts.forEach(post => {
-        if (post.categories) {
-          uniqueCategories.set(post.categories.slug, {
-            id: post.categories.slug,
-            name: post.categories.name,
-            slug: post.categories.slug,
-            description: post.categories.description || '',
+        if (post.categories && post.categories.length > 0) {
+          const category = post.categories[0];
+          uniqueCategories.set(category.slug, {
+            id: category.slug,
+            name: category.name,
+            slug: category.slug,
+            description: category.description || '',
             created_at: post.created_at,
             updated_at: post.updated_at
           });
@@ -128,7 +129,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {post.categories?.name || 'N/A'}
+                    {post.categories && post.categories.length > 0 ? post.categories[0].name : 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(post.created_at).toLocaleDateString()}
@@ -167,7 +168,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
               <p className="text-gray-600 mt-2">{category.description}</p>
               <div className="mt-4 flex justify-between items-center">
                 <span className="text-sm text-gray-500">
-                  {posts.filter(post => post.categories?.slug === category.slug).length} posts
+                  {posts.filter(post => post.categories && post.categories.length > 0 && post.categories[0].slug === category.slug).length} posts
                 </span>
                 <div className="space-x-2">
                   <button className="text-indigo-600 hover:text-indigo-900 text-sm">Edit</button>

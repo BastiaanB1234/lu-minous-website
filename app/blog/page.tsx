@@ -80,7 +80,7 @@ function PostCard({ post }: { post: BlogPost }) {
       <div className="p-6">
         <div className="flex items-center text-sm text-gray-500 mb-3">
           <User className="h-4 w-4 mr-1" />
-          {post.authors?.name || 'Lu Minous'}
+          {post.authors && post.authors.length > 0 ? post.authors[0].name : 'Lu Minous'}
           <span className="mx-2">•</span>
           <Calendar className="h-4 w-4 mr-1" />
           {new Date(post.published_at || post.created_at).toLocaleDateString()}

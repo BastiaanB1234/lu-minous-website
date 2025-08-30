@@ -16,14 +16,17 @@ export interface BlogPost {
   category_id?: string
   tags?: string[]
   categories?: {
+    id: string
     name: string
     slug: string
-  }
+    description?: string
+  }[]
   authors?: {
+    id: string
     name: string
+    email?: string
     bio?: string
-    avatar_url?: string
-  }
+  }[]
 }
 
 export interface Category {

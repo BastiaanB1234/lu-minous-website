@@ -5,17 +5,24 @@ export async function getBlogPosts(status: 'draft' | 'published' = 'published') 
     const { data, error } = await supabase
       .from('blog_posts')
       .select(`
-        *,
+        id,
+        title,
+        slug,
+        content,
+        excerpt,
+        featured_image,
+        published_at,
+        created_at,
+        updated_at,
+        status,
+        author_id,
+        category_id,
+        tags,
         categories (
           id,
           name,
           slug,
           description
-        ),
-        tags (
-          id,
-          name,
-          slug
         ),
         authors (
           id,
@@ -44,17 +51,24 @@ export async function getBlogPostBySlug(slug: string) {
     const { data, error } = await supabase
       .from('blog_posts')
       .select(`
-        *,
+        id,
+        title,
+        slug,
+        content,
+        excerpt,
+        featured_image,
+        published_at,
+        created_at,
+        updated_at,
+        status,
+        author_id,
+        category_id,
+        tags,
         categories (
           id,
           name,
           slug,
           description
-        ),
-        tags (
-          id,
-          name,
-          slug
         ),
         authors (
           id,
@@ -84,17 +98,24 @@ export async function getBlogPostsByCategory(categorySlug: string) {
     const { data, error } = await supabase
       .from('blog_posts')
       .select(`
-        *,
+        id,
+        title,
+        slug,
+        content,
+        excerpt,
+        featured_image,
+        published_at,
+        created_at,
+        updated_at,
+        status,
+        author_id,
+        category_id,
+        tags,
         categories (
           id,
           name,
           slug,
           description
-        ),
-        tags (
-          id,
-          name,
-          slug
         ),
         authors (
           id,
@@ -124,17 +145,24 @@ export async function getBlogPostsByTag(tagSlug: string) {
     const { data, error } = await supabase
       .from('blog_posts')
       .select(`
-        *,
+        id,
+        title,
+        slug,
+        content,
+        excerpt,
+        featured_image,
+        published_at,
+        created_at,
+        updated_at,
+        status,
+        author_id,
+        category_id,
+        tags,
         categories (
           id,
           name,
           slug,
           description
-        ),
-        tags (
-          id,
-          name,
-          slug
         ),
         authors (
           id,
@@ -144,7 +172,7 @@ export async function getBlogPostsByTag(tagSlug: string) {
         )
       `)
       .eq('status', 'published')
-      .eq('tags.slug', tagSlug)
+      .eq('tags', tagSlug)
       .order('created_at', { ascending: false });
 
     if (error) {
