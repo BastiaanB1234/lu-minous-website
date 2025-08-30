@@ -14,7 +14,7 @@ export default function CategoryShowcase() {
     async function loadCategories() {
       try {
         setLoading(true);
-        const response = await fetch('/shop/api/categories');
+        const response = await fetch('/api/categories');
         const result = await response.json();
         
         if (result.success) {
