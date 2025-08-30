@@ -1,19 +1,18 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
-import { Calendar, User, ArrowRight, Star } from 'lucide-react';
-import { getPublishedPosts, getFeaturedPosts } from '@/lib/blog-data';
-import { BlogPost } from '@/lib/types';
 import Link from 'next/link';
+import { Calendar, Clock, User, ArrowRight, Search } from 'lucide-react';
+import { getBlogPosts } from '@/lib/blog-database';
+import { BlogPost } from '@/lib/types';
 
 export const metadata: Metadata = {
   title: 'Blog - Lu Minous',
-  description: 'Discover spiritual wisdom and personal growth insights',
+  description: 'Discover spiritual wisdom, personal growth insights, and transformative teachings from Lu Minous.',
 };
 
 export default async function BlogPage() {
   try {
-    const posts = getPublishedPosts();
-    const featuredPosts = getFeaturedPosts();
+    const posts = await getBlogPosts();
 
     return (
       <div className="min-h-screen bg-gray-50">
@@ -24,35 +23,30 @@ export default async function BlogPage() {
               Lu Minous Blog
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover spiritual wisdom, personal growth insights, and mindful reflections 
-              that inspire transformation and inner peace.
+              Discover spiritual wisdom, personal growth insights, and transformative teachings 
+              that will guide you on your journey to inner peace and enlightenment.
             </p>
           </div>
 
-          {/* Featured Posts */}
-          {featuredPosts.length > 0 && (
+          {/* Featured Post */}
+          {posts.length > 0 && (
             <div className="mb-16">
-              <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
-                <Star className="h-6 w-6 text-yellow-500 mr-2" />
-                Featured Posts
-              </h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {featuredPosts.map((post) => (
-                  <FeaturedPostCard key={post.id} post={post} />
+              <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Post</h2>
+              <FeaturedPostCard post={posts[0]} />
+            </div>
+          )}
+
+          {/* All Posts Grid */}
+          {posts.length > 1 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-8">All Posts</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {posts.slice(1).map((post) => (
+                  <PostCard key={post.id} post={post} />
                 ))}
               </div>
             </div>
           )}
-
-          {/* All Posts */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">All Posts</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
-            </div>
-          </div>
 
           {/* Empty State */}
           {posts.length === 0 && (
@@ -85,10 +79,10 @@ export default async function BlogPage() {
 function FeaturedPostCard({ post }: { post: BlogPost }) {
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-      {post.imageUrl && (
+      {post.featured_image && (
         <div className="relative h-64">
           <Image
-            src={post.imageUrl}
+            src={post.featured_image}
             alt={post.title}
             fill
             className="object-cover"
@@ -98,10 +92,10 @@ function FeaturedPostCard({ post }: { post: BlogPost }) {
       <div className="p-6">
         <div className="flex items-center text-sm text-gray-500 mb-3">
           <User className="h-4 w-4 mr-1" />
-          {post.author}
+          {post.authors?.name || 'Lu Minous'}
           <span className="mx-2">•</span>
           <Calendar className="h-4 w-4 mr-1" />
-          {new Date(post.publishedAt).toLocaleDateString()}
+          {new Date(post.published_at || post.created_at).toLocaleDateString()}
         </div>
         <h3 className="text-xl font-bold text-gray-900 mb-3">{post.title}</h3>
         <p className="text-gray-600 mb-4">{post.excerpt}</p>
@@ -120,10 +114,10 @@ function FeaturedPostCard({ post }: { post: BlogPost }) {
 function PostCard({ post }: { post: BlogPost }) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-      {post.imageUrl && (
+      {post.featured_image && (
         <div className="relative h-48">
           <Image
-            src={post.imageUrl}
+            src={post.featured_image}
             alt={post.title}
             fill
             className="object-cover"
@@ -133,10 +127,10 @@ function PostCard({ post }: { post: BlogPost }) {
       <div className="p-6">
         <div className="flex items-center text-sm text-gray-500 mb-3">
           <User className="h-4 w-4 mr-1" />
-          {post.author}
+          {post.authors?.name || 'Lu Minous'}
           <span className="mx-2">•</span>
           <Calendar className="h-4 w-4 mr-1" />
-          {new Date(post.publishedAt).toLocaleDateString()}
+          {new Date(post.published_at || post.created_at).toLocaleDateString()}
         </div>
         <h3 className="text-lg font-bold text-gray-900 mb-3">{post.title}</h3>
         <p className="text-gray-600 mb-4">{post.excerpt}</p>
