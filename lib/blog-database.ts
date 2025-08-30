@@ -44,7 +44,6 @@ export async function getFeaturedPosts(limit: number = 3) {
       tags(name, slug)
     `)
     .eq('status', 'published')
-    .eq('featured', true)
     .order('created_at', { ascending: false })
     .limit(limit)
 

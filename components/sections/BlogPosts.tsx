@@ -91,14 +91,11 @@ export default function BlogPosts() {
                 
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-3">
-                    {post.tags && post.tags.slice(0, 2).map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full"
-                      >
-                        {tag}
+                    {post.categories && (
+                      <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
+                        {post.categories.name}
                       </span>
-                    ))}
+                    )}
                   </div>
                   
                   <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">

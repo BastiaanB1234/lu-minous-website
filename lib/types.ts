@@ -15,6 +15,15 @@ export interface BlogPost {
   author_id?: string
   category_id?: string
   tags?: string[]
+  categories?: {
+    name: string
+    slug: string
+  }
+  authors?: {
+    name: string
+    bio?: string
+    avatar_url?: string
+  }
 }
 
 export interface Category {
