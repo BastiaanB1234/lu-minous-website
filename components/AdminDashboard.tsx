@@ -3,10 +3,28 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { AdminService } from '../lib/admin';
 import { getBlogPosts } from '../lib/blog-database';
-import { BlogPost, Category, Tag, WebsiteStats } from '../lib/types';
+import { BlogPost, Category, Tag, WebsiteStats, CreatePostData } from '../lib/types';
 
 interface AdminDashboardProps {
   className?: string;
+}
+
+interface PostFormData {
+  title: string;
+  excerpt: string;
+  content: string;
+  status: 'draft' | 'published';
+  category_id: string;
+  tags: string[];
+}
+
+interface CategoryFormData {
+  name: string;
+  description: string;
+}
+
+interface TagFormData {
+  name: string;
 }
 
 export default function AdminDashboard({ className = '' }: AdminDashboardProps) {
@@ -16,6 +34,33 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   const [tags, setTags] = useState<Tag[]>([]);
   const [stats, setStats] = useState<WebsiteStats | null>(null);
   const [loading, setLoading] = useState(false);
+  
+  // Form states
+  const [showPostForm, setShowPostForm] = useState(false);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [showTagForm, setShowTagForm] = useState(false);
+  const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingTag, setEditingTag] = useState<Tag | null>(null);
+  
+  // Form data
+  const [postForm, setPostForm] = useState<PostFormData>({
+    title: '',
+    excerpt: '',
+    content: '',
+    status: 'draft',
+    category_id: '',
+    tags: []
+  });
+  
+  const [categoryForm, setCategoryForm] = useState<CategoryFormData>({
+    name: '',
+    description: ''
+  });
+  
+  const [tagForm, setTagForm] = useState<TagFormData>({
+    name: ''
+  });
 
   const adminService = useMemo(() => new AdminService(), []);
 
@@ -55,11 +100,432 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     loadData();
   }, [loadData]);
 
+  // Post functions
+  const handleCreatePost = async () => {
+    try {
+      const postData: CreatePostData = {
+        title: postForm.title,
+        excerpt: postForm.excerpt,
+        content: postForm.content,
+        status: postForm.status,
+        category_id: postForm.category_id || undefined,
+        tags: postForm.tags
+      };
+
+      const response = await adminService.createBlogPost(postData);
+      if (response.success) {
+        setShowPostForm(false);
+        resetPostForm();
+        loadData(); // Reload data
+      } else {
+        alert('Error creating post: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+      alert('Error creating post');
+    }
+  };
+
+  const handleEditPost = async () => {
+    if (!editingPost) return;
+    
+    try {
+      const postData: Partial<CreatePostData> = {
+        title: postForm.title,
+        excerpt: postForm.excerpt,
+        content: postForm.content,
+        status: postForm.status,
+        category_id: postForm.category_id || undefined,
+        tags: postForm.tags
+      };
+
+      const response = await adminService.updateBlogPost(editingPost.id, postData);
+      if (response.success) {
+        setShowPostForm(false);
+        setEditingPost(null);
+        resetPostForm();
+        loadData(); // Reload data
+      } else {
+        alert('Error updating post: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Error updating post:', error);
+      alert('Error updating post');
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm('Weet je zeker dat je deze post wilt verwijderen?')) return;
+    
+    try {
+      const response = await adminService.deleteBlogPost(postId);
+      if (response.success) {
+        loadData(); // Reload data
+      } else {
+        alert('Error deleting post: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      alert('Error deleting post');
+    }
+  };
+
+  const openEditPost = (post: BlogPost) => {
+    setEditingPost(post);
+    setPostForm({
+      title: post.title,
+      excerpt: post.excerpt || '',
+      content: post.content,
+      status: post.status,
+      category_id: post.category_id || '',
+      tags: post.tags || []
+    });
+    setShowPostForm(true);
+  };
+
+  const resetPostForm = () => {
+    setPostForm({
+      title: '',
+      excerpt: '',
+      content: '',
+      status: 'draft',
+      category_id: '',
+      tags: []
+    });
+    setEditingPost(null);
+  };
+
+  // Category functions
+  const handleCreateCategory = async () => {
+    try {
+      const response = await adminService.createCategory(categoryForm);
+      if (response.success) {
+        setShowCategoryForm(false);
+        resetCategoryForm();
+        loadData(); // Reload data
+      } else {
+        alert('Error creating category: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Error creating category:', error);
+      alert('Error creating category');
+    }
+  };
+
+  const handleEditCategory = async () => {
+    if (!editingCategory) return;
+    
+    try {
+      const response = await adminService.updateCategory(editingCategory.id, categoryForm);
+      if (response.success) {
+        setShowCategoryForm(false);
+        setEditingCategory(null);
+        resetCategoryForm();
+        loadData(); // Reload data
+      } else {
+        alert('Error updating category: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Error updating category:', error);
+      alert('Error updating category');
+    }
+  };
+
+  const handleDeleteCategory = async (categoryId: string) => {
+    if (!confirm('Weet je zeker dat je deze categorie wilt verwijderen?')) return;
+    
+    try {
+      const response = await adminService.deleteCategory(categoryId);
+      if (response.success) {
+        loadData(); // Reload data
+      } else {
+        alert('Error deleting category: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      alert('Error deleting category');
+    }
+  };
+
+  const openEditCategory = (category: Category) => {
+    setEditingCategory(category);
+    setCategoryForm({
+      name: category.name,
+      description: category.description || ''
+    });
+    setShowCategoryForm(true);
+  };
+
+  const resetCategoryForm = () => {
+    setCategoryForm({
+      name: '',
+      description: ''
+    });
+    setEditingCategory(null);
+  };
+
+  // Tag functions
+  const handleCreateTag = async () => {
+    try {
+      const response = await adminService.createTag(tagForm);
+      if (response.success) {
+        setShowTagForm(false);
+        resetTagForm();
+        loadData(); // Reload data
+      } else {
+        alert('Error creating tag: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Error creating tag:', error);
+      alert('Error creating tag');
+    }
+  };
+
+  const handleEditTag = async () => {
+    if (!editingTag) return;
+    
+    try {
+      const response = await adminService.updateTag(editingTag.id, tagForm);
+      if (response.success) {
+        setShowTagForm(false);
+        setEditingTag(null);
+        resetTagForm();
+        loadData(); // Reload data
+      } else {
+        alert('Error updating tag: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Error updating tag:', error);
+      alert('Error updating tag');
+    }
+  };
+
+  const handleDeleteTag = async (tagId: string) => {
+    if (!confirm('Weet je zeker dat je deze tag wilt verwijderen?')) return;
+    
+    try {
+      const response = await adminService.deleteTag(tagId);
+      if (response.success) {
+        loadData(); // Reload data
+      } else {
+        alert('Error deleting tag: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Error deleting tag:', error);
+      alert('Error deleting tag');
+    }
+  };
+
+  const openEditTag = (tag: Tag) => {
+    setEditingTag(tag);
+    setTagForm({
+      name: tag.name
+    });
+    setShowTagForm(true);
+  };
+
+  const resetTagForm = () => {
+    setTagForm({
+      name: ''
+    });
+    setEditingTag(null);
+  };
+
+  const renderPostForm = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <h3 className="text-lg font-semibold mb-4">
+          {editingPost ? 'Edit Post' : 'Create New Post'}
+        </h3>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Title</label>
+            <input
+              type="text"
+              value={postForm.title}
+              onChange={(e) => setPostForm({...postForm, title: e.target.value})}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Excerpt</label>
+            <textarea
+              value={postForm.excerpt}
+              onChange={(e) => setPostForm({...postForm, excerpt: e.target.value})}
+              rows={3}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Content</label>
+            <textarea
+              value={postForm.content}
+              onChange={(e) => setPostForm({...postForm, content: e.target.value})}
+              rows={6}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Status</label>
+            <select
+              value={postForm.status}
+              onChange={(e) => setPostForm({...postForm, status: e.target.value as 'draft' | 'published'})}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            >
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Category</label>
+            <select
+              value={postForm.category_id}
+              onChange={(e) => setPostForm({...postForm, category_id: e.target.value})}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            >
+              <option value="">Select Category</option>
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>{category.name}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Tags (comma separated)</label>
+            <input
+              type="text"
+              value={postForm.tags.join(', ')}
+              onChange={(e) => setPostForm({...postForm, tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag)})}
+              placeholder="liefde, verbinding, groei"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+        
+        <div className="flex justify-end space-x-3 mt-6">
+          <button
+            onClick={() => {
+              setShowPostForm(false);
+              resetPostForm();
+            }}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={editingPost ? handleEditPost : handleCreatePost}
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          >
+            {editingPost ? 'Update Post' : 'Create Post'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderCategoryForm = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <h3 className="text-lg font-semibold mb-4">
+          {editingCategory ? 'Edit Category' : 'Create New Category'}
+        </h3>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <input
+              type="text"
+              value={categoryForm.name}
+              onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Description</label>
+            <textarea
+              value={categoryForm.description}
+              onChange={(e) => setCategoryForm({...categoryForm, description: e.target.value})}
+              rows={3}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+        
+        <div className="flex justify-end space-x-3 mt-6">
+          <button
+            onClick={() => {
+              setShowCategoryForm(false);
+              resetCategoryForm();
+            }}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={editingCategory ? handleEditCategory : handleCreateCategory}
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          >
+            {editingCategory ? 'Update Category' : 'Create Category'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderTagForm = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <h3 className="text-lg font-semibold mb-4">
+          {editingTag ? 'Edit Tag' : 'Create New Tag'}
+        </h3>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <input
+              type="text"
+              value={tagForm.name}
+              onChange={(e) => setTagForm({...tagForm, name: e.target.value})}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+        
+        <div className="flex justify-end space-x-3 mt-6">
+          <button
+            onClick={() => {
+              setShowTagForm(false);
+              resetTagForm();
+            }}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={editingTag ? handleEditTag : handleCreateTag}
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          >
+            {editingTag ? 'Update Tag' : 'Create Tag'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderPostsTab = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Blog Posts ({posts.length})</h3>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        <button 
+          onClick={() => setShowPostForm(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
           + New Post
         </button>
       </div>
@@ -133,8 +599,18 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                       {new Date(post.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
-                      <button className="text-red-600 hover:text-red-900">Delete</button>
+                      <button 
+                        onClick={() => openEditPost(post)}
+                        className="text-indigo-600 hover:text-indigo-900 mr-3"
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDeletePost(post.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 );
@@ -150,7 +626,10 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Categories ({categories.length})</h3>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        <button 
+          onClick={() => setShowCategoryForm(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
           + New Category
         </button>
       </div>
@@ -170,8 +649,18 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                   {posts.filter(post => post.category_id === category.id).length} posts
                 </span>
                 <div className="space-x-2">
-                  <button className="text-indigo-600 hover:text-indigo-900 text-sm">Edit</button>
-                  <button className="text-red-600 hover:text-red-900 text-sm">Delete</button>
+                  <button 
+                    onClick={() => openEditCategory(category)}
+                    className="text-indigo-600 hover:text-indigo-900 text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteCategory(category.id)}
+                    className="text-red-600 hover:text-red-900 text-sm"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
@@ -185,7 +674,10 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Tags ({tags.length})</h3>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        <button 
+          onClick={() => setShowTagForm(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
           + New Tag
         </button>
       </div>
@@ -204,8 +696,18 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                   {posts.filter(post => post.tags && post.tags.includes(tag.name)).length} posts
                 </span>
                 <div className="space-x-2">
-                  <button className="text-indigo-600 hover:text-indigo-900 text-sm">Edit</button>
-                  <button className="text-red-600 hover:text-red-900 text-sm">Delete</button>
+                  <button 
+                    onClick={() => openEditTag(tag)}
+                    className="text-indigo-600 hover:text-indigo-900 text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteTag(tag.id)}
+                    className="text-red-600 hover:text-red-900 text-sm"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
@@ -329,6 +831,11 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
           {activeTab === 'analytics' && renderAnalyticsTab()}
         </div>
       </div>
+
+      {/* Modals */}
+      {showPostForm && renderPostForm()}
+      {showCategoryForm && renderCategoryForm()}
+      {showTagForm && renderTagForm()}
     </div>
   );
 }
