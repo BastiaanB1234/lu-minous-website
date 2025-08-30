@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { BlogPost } from '../../lib/types';
+import { BlogPost, Category } from '../../lib/types';
 
 export default function BlogPosts() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -13,13 +14,24 @@ export default function BlogPosts() {
     async function loadBlogPosts() {
       try {
         setLoading(true);
-        const response = await fetch('/api/blog/posts');
-        const result = await response.json();
         
-        if (result.success) {
-          setPosts(result.data);
+        // Laad posts en categories parallel
+        const [postsResponse, categoriesResponse] = await Promise.all([
+          fetch('/api/blog/posts'),
+          fetch('/api/blog/categories')
+        ]);
+        
+        const postsResult = await postsResponse.json();
+        const categoriesResult = await categoriesResponse.json();
+        
+        if (postsResult.success) {
+          setPosts(postsResult.data);
         } else {
           setError(true);
+        }
+
+        if (categoriesResult.success) {
+          setCategories(categoriesResult.data);
         }
       } catch (err) {
         console.error('Error loading blog posts:', err);
@@ -77,52 +89,55 @@ export default function BlogPosts() {
         
         {posts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
-              <article key={post.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                {post.featured_image && (
-                  <div className="aspect-video bg-gray-200">
-                    <img
-                      src={post.featured_image}
-                      alt={post.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    {post.categories && post.categories.length > 0 && (
-                      <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
-                        {post.categories[0].name}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                    {post.title}
-                  </h3>
-                  
-                  {post.excerpt && (
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      {post.excerpt}
-                    </p>
+            {posts.map((post) => {
+              const category = categories.find(cat => cat.id === post.category_id);
+              return (
+                <article key={post.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+                  {post.featured_image && (
+                    <div className="aspect-video bg-gray-200">
+                      <img
+                        src={post.featured_image}
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   )}
                   
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">
-                      {new Date(post.created_at).toLocaleDateString('nl-NL')}
-                    </span>
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      {category && (
+                        <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
+                          {category.name}
+                        </span>
+                      )}
+                    </div>
                     
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="text-orange-600 hover:text-orange-700 text-sm font-medium"
-                    >
-                      Lees meer →
-                    </Link>
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                      {post.title}
+                    </h3>
+                    
+                    {post.excerpt && (
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                        {post.excerpt}
+                      </p>
+                    )}
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500">
+                        {new Date(post.created_at).toLocaleDateString('nl-NL')}
+                      </span>
+                      
+                      <Link
+                        href={`/blog/${post.slug}`}
+                        className="text-orange-600 hover:text-orange-700 text-sm font-medium"
+                      >
+                        Lees meer →
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         ) : (
           <div className="text-center text-gray-600">
