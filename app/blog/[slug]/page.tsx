@@ -1,9 +1,9 @@
-import { Metadata } from 'next';
 import Image from 'next/image';
 import { Calendar, Clock, User, ArrowLeft, Share2, Heart, MessageCircle } from 'lucide-react';
 import { getBlogPostBySlug } from '@/lib/blog-database';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { Metadata } from 'next';
 
 interface BlogPostPageProps {
   params: { slug: string };
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
         images: post.featured_image ? [post.featured_image] : [],
       },
     };
-  } catch (error) {
+  } catch {
     return {
       title: 'Post Not Found - Lu Minous',
     };
@@ -144,7 +144,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       </div>
     );
-  } catch (error) {
+  } catch {
     notFound();
   }
 }

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, Clock, User, ArrowRight, Search } from 'lucide-react';
+import { Calendar, User, ArrowRight } from 'lucide-react';
 import { getBlogPosts } from '@/lib/blog-database';
 import { BlogPost } from '@/lib/types';
 
@@ -20,10 +20,10 @@ export default async function BlogPage() {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Lu Minous Blog
+              Our Blog
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover spiritual wisdom, personal growth insights, and transformative teachings 
+              Discover spiritual wisdom, personal growth insights, and transformative teachings
               that will guide you on your journey to inner peace and enlightenment.
             </p>
           </div>
