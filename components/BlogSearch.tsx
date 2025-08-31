@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Filter, X, Tag, FolderOpen } from 'lucide-react';
 import { BlogPost, Category } from '@/lib/types';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface BlogSearchProps {
   posts: BlogPost[];
@@ -11,10 +12,24 @@ interface BlogSearchProps {
 }
 
 export default function BlogSearch({ posts, categories, onSearchResults }: BlogSearchProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+
+  // Initialize filters from URL parameters
+  useEffect(() => {
+    const category = searchParams.get('category') || '';
+    const tag = searchParams.get('tag') || '';
+    const search = searchParams.get('search') || '';
+
+    setSelectedCategory(category);
+    setSelectedTags(tag ? [tag] : []);
+    setSearchTerm(search);
+  }, [searchParams]);
 
   // Get all unique tags from posts
   const allTags = useMemo(() => {
@@ -52,20 +67,46 @@ export default function BlogSearch({ posts, categories, onSearchResults }: BlogS
     onSearchResults(filteredPosts);
   }, [filteredPosts, onSearchResults]);
 
+  // Update URL when filters change
+  const updateURL = (newSearch: string, newCategory: string, newTags: string[]) => {
+    const params = new URLSearchParams();
+    
+    if (newSearch) params.set('search', newSearch);
+    if (newCategory) params.set('category', newCategory);
+    if (newTags.length > 0) params.set('tag', newTags[0]); // Support single tag for now
+    
+    const newURL = params.toString() ? `?${params.toString()}` : '/blog';
+    router.push(newURL, { scroll: false });
+  };
+
   // Clear all filters
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedCategory('');
     setSelectedTags([]);
+    updateURL('', '', []);
   };
 
-  // Toggle tag selection
+  // Handle search term change
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    updateURL(value, selectedCategory, selectedTags);
+  };
+
+  // Handle category change
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    updateURL(searchTerm, value, selectedTags);
+  };
+
+  // Handle tag selection
   const toggleTag = (tag: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
-    );
+    const newTags = selectedTags.includes(tag) 
+      ? selectedTags.filter(t => t !== tag)
+      : [tag]; // Only allow one tag at a time for URL simplicity
+    
+    setSelectedTags(newTags);
+    updateURL(searchTerm, selectedCategory, newTags);
   };
 
   // Get category name by ID
@@ -92,12 +133,12 @@ export default function BlogSearch({ posts, categories, onSearchResults }: BlogS
           type="text"
           placeholder="Zoek in blog posts..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => handleSearchChange(e.target.value)}
           className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         {searchTerm && (
           <button
-            onClick={() => setSearchTerm('')}
+            onClick={() => handleSearchChange('')}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
           >
             <X className="h-5 w-5" />
@@ -141,7 +182,7 @@ export default function BlogSearch({ posts, categories, onSearchResults }: BlogS
             </label>
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={(e) => handleCategoryChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Alle categorieën</option>
