@@ -3,13 +3,28 @@ import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'nodejs';
 
+// Check if required environment variables are available
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('Missing required environment variables for image upload');
+}
+
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  supabaseUrl || 'https://wkbmfqkjutwshywgbjtn.supabase.co',
+  supabaseServiceKey || 'fallback-key'
 );
 
 export async function POST(req: NextRequest) {
   try {
+    // Check if environment variables are available
+    if (!supabaseUrl || !supabaseServiceKey) {
+      return NextResponse.json({ 
+        error: 'Image upload service not configured properly' 
+      }, { status: 500 });
+    }
+
     const form = await req.formData();
     const file = form.get('file') as File;
     const slug = String(form.get('slug') || '').trim();
