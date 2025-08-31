@@ -707,7 +707,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                   >
                     Delete
                   </button>
-                </div>
+              </div>
             </div>
           </div>
         ))}
