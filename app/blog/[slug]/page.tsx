@@ -144,8 +144,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </div>
 
               {/* Content */}
-              <div className="prose prose-lg max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br>') }} />
+              <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed">
+                <div dangerouslySetInnerHTML={{ __html: post.content }} />
               </div>
 
               {/* Social Actions */}
