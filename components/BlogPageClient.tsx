@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, User, ArrowRight, Clock, Tag, FolderOpen } from 'lucide-react';
 import { BlogPost, Category } from '@/lib/types';
-import BlogSearch from './BlogSearch';
+import BlogFilters from './BlogSearch';
 import BlogSidebar from './BlogSidebar';
 
 interface BlogPageClientProps {
@@ -29,11 +29,11 @@ export default function BlogPageClient({ initialPosts, categories }: BlogPageCli
           </p>
         </div>
 
-        {/* Search Component */}
-        <BlogSearch 
+        {/* Filters Component */}
+        <BlogFilters 
           posts={initialPosts} 
           categories={categories} 
-          onSearchResults={setFilteredPosts}
+          onFilterResults={setFilteredPosts}
         />
 
         {/* Main Content with Sidebar */}

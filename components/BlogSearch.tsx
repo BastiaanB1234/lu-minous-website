@@ -1,21 +1,20 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, X, Tag, FolderOpen } from 'lucide-react';
+import { Filter, Tag, FolderOpen } from 'lucide-react';
 import { BlogPost, Category } from '@/lib/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-interface BlogSearchProps {
+interface BlogFiltersProps {
   posts: BlogPost[];
   categories: Category[];
-  onSearchResults: (results: BlogPost[]) => void;
+  onFilterResults: (results: BlogPost[]) => void;
 }
 
-export default function BlogSearch({ posts, categories, onSearchResults }: BlogSearchProps) {
+export default function BlogFilters({ posts, categories, onFilterResults }: BlogFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -24,11 +23,9 @@ export default function BlogSearch({ posts, categories, onSearchResults }: BlogS
   useEffect(() => {
     const category = searchParams.get('category') || '';
     const tag = searchParams.get('tag') || '';
-    const search = searchParams.get('search') || '';
 
     setSelectedCategory(category);
     setSelectedTags(tag ? [tag] : []);
-    setSearchTerm(search);
   }, [searchParams]);
 
   // Get all unique tags from posts
@@ -42,15 +39,9 @@ export default function BlogSearch({ posts, categories, onSearchResults }: BlogS
     return Array.from(tags).sort();
   }, [posts]);
 
-  // Filter posts based on search criteria
+  // Filter posts based on filter criteria
   const filteredPosts = useMemo(() => {
     return posts.filter(post => {
-      // Search term filter
-      const matchesSearch = !searchTerm || 
-        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.content.toLowerCase().includes(searchTerm.toLowerCase());
-
       // Category filter
       const matchesCategory = !selectedCategory || post.category_id === selectedCategory;
 
@@ -58,20 +49,19 @@ export default function BlogSearch({ posts, categories, onSearchResults }: BlogS
       const matchesTags = selectedTags.length === 0 || 
         selectedTags.every(tag => post.tags?.includes(tag));
 
-      return matchesSearch && matchesCategory && matchesTags;
+      return matchesCategory && matchesTags;
     });
-  }, [posts, searchTerm, selectedCategory, selectedTags]);
+  }, [posts, selectedCategory, selectedTags]);
 
   // Update search results when filters change
   useEffect(() => {
-    onSearchResults(filteredPosts);
-  }, [filteredPosts, onSearchResults]);
+    onFilterResults(filteredPosts);
+  }, [filteredPosts, onFilterResults]);
 
   // Update URL when filters change
-  const updateURL = (newSearch: string, newCategory: string, newTags: string[]) => {
+  const updateURL = (newCategory: string, newTags: string[]) => {
     const params = new URLSearchParams();
     
-    if (newSearch) params.set('search', newSearch);
     if (newCategory) params.set('category', newCategory);
     if (newTags.length > 0) params.set('tag', newTags[0]); // Support single tag for now
     
@@ -81,22 +71,15 @@ export default function BlogSearch({ posts, categories, onSearchResults }: BlogS
 
   // Clear all filters
   const clearFilters = () => {
-    setSearchTerm('');
     setSelectedCategory('');
     setSelectedTags([]);
-    updateURL('', '', []);
-  };
-
-  // Handle search term change
-  const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
-    updateURL(value, selectedCategory, selectedTags);
+    updateURL('', []);
   };
 
   // Handle category change
   const handleCategoryChange = (value: string) => {
     setSelectedCategory(value);
-    updateURL(searchTerm, value, selectedTags);
+    updateURL(value, selectedTags);
   };
 
   // Handle tag selection
@@ -106,12 +89,7 @@ export default function BlogSearch({ posts, categories, onSearchResults }: BlogS
       : [tag]; // Only allow one tag at a time for URL simplicity
     
     setSelectedTags(newTags);
-    updateURL(searchTerm, selectedCategory, newTags);
-  };
-
-  // Get category name by ID
-  const getCategoryName = (categoryId: string) => {
-    return categories.find(cat => cat.id === categoryId)?.name || 'Unknown';
+    updateURL(selectedCategory, newTags);
   };
 
   // Count posts per category
@@ -126,26 +104,6 @@ export default function BlogSearch({ posts, categories, onSearchResults }: BlogS
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-      {/* Search Bar */}
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-        <input
-          type="text"
-          placeholder="Zoek in blog posts..."
-          value={searchTerm}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        {searchTerm && (
-          <button
-            onClick={() => handleSearchChange('')}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        )}
-      </div>
-
       {/* Filter Toggle */}
       <div className="flex items-center justify-between mb-4">
         <button
@@ -161,7 +119,7 @@ export default function BlogSearch({ posts, categories, onSearchResults }: BlogS
           )}
         </button>
         
-        {(searchTerm || selectedCategory || selectedTags.length > 0) && (
+        {(selectedCategory || selectedTags.length > 0) && (
           <button
             onClick={clearFilters}
             className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
@@ -219,9 +177,9 @@ export default function BlogSearch({ posts, categories, onSearchResults }: BlogS
         </div>
       )}
 
-      {/* Search Results Summary */}
+      {/* Filter Results Summary */}
       <div className="text-sm text-gray-600">
-        {searchTerm || selectedCategory || selectedTags.length > 0 ? (
+        {selectedCategory || selectedTags.length > 0 ? (
           <span>
             {filteredPosts.length} van {posts.length} posts gevonden
           </span>
