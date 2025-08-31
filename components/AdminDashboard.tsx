@@ -117,18 +117,15 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await adminService.createBlogPost(postForm);
-      if (response.success) {
-        setShowPostForm(false);
-        resetPostForm();
-        loadData(); // Reload data
-      } else {
-        alert('Error creating post: ' + response.error);
-      }
-    } catch (error) {
-      console.error('Error creating post:', error);
-      alert('Error creating post');
-    }
+      // Zorg ervoor dat tags een array van strings zijn
+      const postData = {
+        ...postForm,
+        tags: Array.isArray(postForm.tags) ? postForm.tags : []
+      };
+      
+      const response = await adminService.createBlogPost(postData);
+      if (response.success) { setShowPostForm(false); resetPostForm(); loadData(); } else { alert('Error creating post: ' + response.error); }
+    } catch (error) { console.error('Error creating post:', error); alert('Error creating post'); }
   };
 
   const handleEditPost = async (e: React.FormEvent) => {
@@ -136,19 +133,15 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
     if (!editingPost) return;
     
     try {
-      const response = await adminService.updateBlogPost(editingPost.id, postForm);
-      if (response.success) {
-        setShowPostForm(false);
-        setEditingPost(null);
-        resetPostForm();
-        loadData(); // Reload data
-      } else {
-        alert('Error updating post: ' + response.error);
-      }
-    } catch (error) {
-      console.error('Error updating post:', error);
-      alert('Error updating post');
-    }
+      // Zorg ervoor dat tags een array van strings zijn
+      const postData = {
+        ...postForm,
+        tags: Array.isArray(postForm.tags) ? postForm.tags : []
+      };
+      
+      const response = await adminService.updateBlogPost(editingPost.id, postData);
+      if (response.success) { setShowPostForm(false); resetPostForm(); loadData(); } else { alert('Error updating post: ' + response.error); }
+    } catch (error) { console.error('Error updating post:', error); alert('Error updating post'); }
   };
 
   const handleDeletePost = async (postId: string) => {
@@ -175,7 +168,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       content: post.content,
       status: post.status,
       category_id: post.category_id || '',
-      tags: post.tags || [],
+      tags: post.tags || [], // Dit is al een array van tag namen
       featured_image: post.featured_image || ''
     });
     setShowPostForm(true);
@@ -188,7 +181,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       content: '',
       status: 'draft',
       category_id: '',
-      tags: [],
+      tags: [], // Reset naar lege array
       featured_image: ''
     });
     setEditingPost(null);
@@ -435,17 +428,26 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma separated)</label>
-            <input
-              type="text"
-              value={postForm.tags.join(', ')}
-              onChange={(e) => setPostForm(prev => ({ 
-                ...prev, 
-                tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag)
-              }))}
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tags (selecteer uit bestaande tags)</label>
+            <select
+              multiple
+              value={postForm.tags}
+              onChange={(e) => {
+                const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+                setPostForm(prev => ({ ...prev, tags: selectedOptions }));
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="liefde, groei, spiritualiteit"
-            />
+              size={4}
+            >
+              {tags.map(tag => (
+                <option key={tag.id} value={tag.name}>
+                  {tag.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-sm text-gray-500 mt-1">
+              Houd Ctrl/Cmd ingedrukt om meerdere tags te selecteren
+            </p>
           </div>
           
           <div>
@@ -602,7 +604,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
           >
             <span className="mr-2">+</span>
             New Post
-          </button>
+        </button>
         </div>
       </div>
       
@@ -623,9 +625,9 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                         post.status === 'published' 
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {post.status}
-                      </span>
+                    }`}>
+                      {post.status}
+                    </span>
                       <span>Category: {category?.name || 'N/A'}</span>
                       <span>{new Date(post.created_at).toLocaleDateString()}</span>
                     </div>
@@ -664,7 +666,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       ) : (
         <div className="text-center py-8 text-gray-500">
           No posts found.
-        </div>
+      </div>
       )}
     </div>
   );
@@ -685,7 +687,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
         <div className="text-center py-8">Loading...</div>
       ) : categories.length > 0 ? (
         <div className="space-y-4">
-          {categories.map((category) => (
+        {categories.map((category) => (
             <div key={category.id} className="border border-gray-200 rounded-lg p-4">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
@@ -706,10 +708,10 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
                     Delete
                   </button>
                 </div>
-              </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
       ) : (
         <div className="text-center py-8 text-gray-500">
           No categories found.
@@ -759,7 +761,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
       ) : (
         <div className="text-center py-8 text-gray-500">
           No tags found.
-        </div>
+      </div>
       )}
     </div>
   );
@@ -797,7 +799,7 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
           <p className="mt-2 text-gray-600">Manage your blog content and view analytics</p>
         </div>
-        
+
         <div className="border-b border-gray-200 mb-8">
           <nav className="-mb-px flex space-x-8">
             {[
@@ -820,13 +822,13 @@ export default function AdminDashboard({ className = '' }: AdminDashboardProps) 
             ))}
           </nav>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow p-6">
-          {activeTab === 'posts' && renderPostsTab()}
-          {activeTab === 'categories' && renderCategoriesTab()}
-          {activeTab === 'tags' && renderTagsTab()}
-          {activeTab === 'analytics' && renderAnalyticsTab()}
-        </div>
+            {activeTab === 'posts' && renderPostsTab()}
+            {activeTab === 'categories' && renderCategoriesTab()}
+            {activeTab === 'tags' && renderTagsTab()}
+            {activeTab === 'analytics' && renderAnalyticsTab()}
+          </div>
         
         {showPostForm && renderPostForm()}
         {showCategoryForm && renderCategoryForm()}
